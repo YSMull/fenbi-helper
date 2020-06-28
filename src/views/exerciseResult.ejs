@@ -1,0 +1,45 @@
+<html>
+<body style="background: #f5f7fa;">
+
+<div style="margin: 20px auto 0; width: 1024px;">
+    <div style="padding-top: 20px;"><a style="text-decoration: none;color: #2385f7;" target="_blank" href="https://www.fenbi.com/spa/tiku/report/exam/solution/xingce/xingce/<%=exerciseId%>/4">粉笔报告地址</a></div>
+    <div style="padding-top: 20px;">共收录做错题<%=incorrect.length%>道，做对题<%=correct.length%>道(耗时大于<%=costThreshold%>秒)</div>
+    <% for (let q of incorrect.concat(correct)) { %>
+        <div id="<%=q.questionId%>" style="margin-bottom: 20px; padding: 0 30px 30px 30px;background-color:#ffffff;line-height: 2rem;">
+            <p style="color: #2d2d2ddb;margin-left:-30px;padding: 0 8px;font-size: .875rem;background-image: linear-gradient(to right, #bdddff, #ffffff);"><%- q.source.replace(/（网友回忆版）/g, '') %></p>
+            <span style="margin-left: -25px;"> <%- q.idx %>.</span>
+            <% if (q.correct) { %>
+                <span style="background: #f1f8ff;border-radius: 4px;color: #3792fd;padding: 0 8px;font-size: .875rem;">我做对了</span>
+            <% } else { %>
+                <span style="background: #ffc3c3;border-radius: 4px;color: rgba(206,57,57,0.79);padding: 0 8px;font-size: .875rem;">我做错了</span>
+            <% } %>
+            <span style="background: #f1f8ff;border-radius: 4px;color: #3792fd;padding: 0 8px;font-size: .875rem;"> 耗时<%- q.cost %>秒</span>
+            <span style="background: #f1f8ff;border-radius: 4px;color: #3792fd;padding: 0 8px;font-size: .875rem;"> 正确率<%- q.correctRatio.toFixed(2) %>%</span>
+            <div style="font-weight: 500; color: #3c464f;"> <%- q.content %></div>
+            <% for (let opt of q.options) { %>
+                <li style="list-style: upper-alpha"><%= opt %></li>
+            <% } %>
+        </div>
+
+        <div style="padding-left: 30px;margin-top: -10px;margin-bottom: 38px;">
+            <a style="text-decoration: none;background-color: white;color: #65acff;padding: 4px;border: solid 1px;border-color: #c7c5c5;border-radius: 3px;" id="show-ans-<%=q.questionId%>" href="javascript:showSolution(<%=q.questionId%>);">查看解析</a>
+        </div>
+        <div id="ans-<%=q.questionId%>" style="padding: 0 30px;display:none">
+            <%- q.solution %>
+        </div>
+    <% } %>
+</div>
+</body>
+<script>
+    function showSolution(questionId) {
+        let dis = document.getElementById(`ans-${questionId}`).style.display;
+        if (dis === 'none') {
+            document.getElementById(`ans-${questionId}`).style.display="block";
+            document.getElementById(`show-ans-${questionId}`).innerHTML="收起解析";
+        } else {
+            document.getElementById(`ans-${questionId}`).style.display="none";
+            document.getElementById(`show-ans-${questionId}`).innerHTML="查看解析";
+        }
+    }
+</script>
+</html>

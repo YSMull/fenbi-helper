@@ -1,0 +1,30 @@
+const Koa = require('koa');
+const KoaRouter = require('koa-router');
+const render = require('koa-ejs');
+
+const path = require('path');
+
+const app = new Koa();
+const router = new KoaRouter();
+
+const exerciseResult = require('./service/exercisesResult');
+
+render(app, {
+    root: path.join(__dirname, 'views'),
+    layout: false,
+    viewExt: 'ejs',
+    cache: false,
+    debug: false,
+});
+
+
+router.get('/test/:exerciseId', async ctx => {
+    let exerciseId = ctx.params.exerciseId;
+    let costThreshold = Number.parseInt(ctx.query.cost || 65);
+    await ctx.render('exerciseResult', await exerciseResult.getResultObj(exerciseId, costThreshold));
+})
+
+
+app.use(router.routes()).use(router.allowedMethods())
+
+app.listen(3000);
