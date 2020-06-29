@@ -1,4 +1,5 @@
 const _ = require('lodash')
+const moment = require('moment')
 
 const {httpRequest} = require('../util/httpUtil');
 
@@ -47,6 +48,37 @@ async function getQuestionKeyPointsByIds(questionIds) {
     return _.zipObject(questionIds, questions);
 }
 
+function getExerciseReport(exerciseId) {
+    return httpRequest({
+        url: `https://tiku.fenbi.com/api/xingce/exercises/${exerciseId}/report/v2`,
+        method: "GET",
+        json: true,
+        headers
+    });
+}
+
+function getExercise(exerciseId) {
+    return httpRequest({
+        url: `https://tiku.fenbi.com/api/xingce/exercises/${exerciseId}`,
+        method: "GET",
+        json: true,
+        headers
+    });
+}
+
+async function getExerciseHistory() {
+    let cursorArr = [0, 30];
+    let hisArr = await Promise.all(cursorArr.map(cursor => {
+        return httpRequest({
+            url: `https://tiku.fenbi.com/api/xingce/category-exercises?categoryId=3&cursor=${cursor}&count=30`,
+            method: "GET",
+            json: true,
+            headers
+        });
+    }));
+    return _.flatMap(hisArr, his => his.datas);
+}
+
 async function getSolutionsByIds(questionIds) {
     let questions = await httpRequest({
         url: `https://tiku.fenbi.com/api/xingce/solutions?ids=${questionIds.join(',')}`,
@@ -57,13 +89,31 @@ async function getSolutionsByIds(questionIds) {
     return _.zipObject(questionIds, questions);
 }
 
-exports.getResultObj = async function (exerciseId, costThreshold) {
-    let report = await httpRequest({
-        url: `https://tiku.fenbi.com/api/xingce/exercises/${exerciseId}/report/v2`,
-        method: "GET",
-        json: true,
-        headers
+exports.getExerciseHistory = async function () {
+    let exerciseHistory = await getExerciseHistory();
+    // exerciseHistory.map()
+    // let resultObj = await getExerciseReport(9999);
+    exerciseHistory = exerciseHistory.filter(h => h.status === 1);
+    let exerciseReportMap = _.zipObject(exerciseHistory.map(item => item.id), await Promise.all(exerciseHistory.map(item => getExerciseReport(item.id))));
+    exerciseHistory.forEach(history => {
+        history.finishedTime = moment(history.updatedTime).format('YYYY-MM-DD HH:mm:ss')
+
+        let report = exerciseReportMap[history.id];
+        if (report) {
+            history.elapsedTime = report.elapsedTime;
+            history.correctRate = report.correctRate;
+        }
     });
+
+
+    return {
+        exerciseHistory: exerciseHistory.filter(h => h.status === 1),
+        moment
+    }
+}
+
+exports.getResultObj = async function (exerciseId, costThreshold) {
+    let [exercise, report] = await Promise.all([getExercise(exerciseId), getExerciseReport(exerciseId)]);
 
     let answerResultMap = {};
     report.answers.forEach(answer => {
@@ -73,16 +123,8 @@ exports.getResultObj = async function (exerciseId, costThreshold) {
         }
     });
 
-
-    let result = await httpRequest({
-        url: `https://tiku.fenbi.com/api/xingce/exercises/${exerciseId}`,
-        method: "GET",
-        json: true,
-        headers
-    });
-    console.log(`答题编号:${result.id}`);
-    let concernQuestions = Object.keys(result.userAnswers).map(idx => {
-        let ua = result.userAnswers[idx];
+    let concernQuestions = Object.keys(exercise.userAnswers).map(idx => {
+        let ua = exercise.userAnswers[idx];
         let correct = answerResultMap[ua.questionId];
         if (ua.time > costThreshold || !correct) {
             return {

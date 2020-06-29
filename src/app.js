@@ -18,11 +18,15 @@ render(app, {
 });
 
 
-router.get('/test/:exerciseId', async ctx => {
+router.get('/exercise/:exerciseId', async ctx => {
     let exerciseId = ctx.params.exerciseId;
     let costThreshold = Number.parseInt(ctx.query.cost || 65);
     await ctx.render('exerciseResult', await exerciseResult.getResultObj(exerciseId, costThreshold));
-})
+});
+
+router.get('/history', async ctx => {
+    await ctx.render('history', await exerciseResult.getExerciseHistory());
+});
 
 
 app.use(router.routes()).use(router.allowedMethods())
