@@ -1,45 +1,48 @@
 <html lang="zh">
-<style>
-    .his-item {
-        margin-bottom: 20px;
-        padding: 0 0 20px 0;
-        background-color: #ffffff;
-        line-height: 2rem;
-        -webkit-transition: all .3s;
-        -moz-transition: all .3s;
-        -o-transition: all .3s;
-        transition: all .3s;
-    }
+<head>
+    <style>
+        .his-item {
+            margin-bottom: 20px;
+            padding: 0 0 20px 0;
+            background-color: #ffffff;
+            line-height: 2rem;
+            -webkit-transition: all .3s;
+            -moz-transition: all .3s;
+            -o-transition: all .3s;
+            transition: all .3s;
+        }
 
-    .his-item:hover {
-        box-shadow: 0 1px 10px 0 #888888;
-        cursor: pointer;
-    }
+        .his-item:hover {
+            box-shadow: 0 1px 10px 0 #888888;
+            cursor: pointer;
+        }
 
-    .his-tag {
-        font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
-        background: #f1f8ff;
-        border-radius: 4px;
-        color: #3792fd;
-        padding: 0 8px;
-        margin-left: 8px;
-        font-size: .875rem;
-    }
+        .his-tag {
+            font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
+            background: #f1f8ff;
+            border-radius: 4px;
+            color: #3792fd;
+            padding: 0 8px;
+            margin-left: 8px;
+            font-size: .875rem;
+        }
 
-    .his-title {
-        font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
-        color: #2d2d2ddb;
-        padding: 0 8px;
-        font-size: .875rem;
-        background-image: linear-gradient(to right, #bdddff, #ffffff);
-    }
+        .his-title {
+            font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
+            color: #2d2d2ddb;
+            padding: 0 8px;
+            font-size: .875rem;
+            background-image: linear-gradient(to right, #bdddff, #ffffff);
+        }
 
-    .his-time {
-        font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
-        font-size: 16px;
-        float: right;
-    }
-</style>
+        .his-time {
+            font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
+            font-size: 16px;
+            float: right;
+        }
+    </style>
+</head>
+
 <body style="background: #f5f7fa;">
 
 <div style="margin: 20px auto 0; width: 700px;">
@@ -52,7 +55,16 @@
             <span class="his-tag">做了<%= history.answerCount %>题</span>
             <span class="his-tag">耗时<%= Math.round(moment.duration(history.elapsedTime, 'seconds').asMinutes().toFixed(1)) %>分钟</span>
             <span class="his-tag">正确率<%= history.correctRate %>%</span>
-            <span class="his-tag"><%= history.client %></span>
+            <span class="his-tag">
+                <%= (a => {
+                    switch (a) {
+                        case 'WEB':
+                            return '电脑';
+                        default:
+                            return '手机'
+                    }
+                })(history.client) %>
+            </span>
         </div>
     <% } %>
 </div>

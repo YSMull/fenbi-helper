@@ -1,30 +1,173 @@
-<html>
+<html lang="zh">
+<head>
+    <style>
+        .quz-item {
+            margin-bottom: 20px;
+            background-color: #ffffff;
+            line-height: 2rem;
+            -webkit-transition: all .3s;
+            -moz-transition: all .3s;
+            -o-transition: all .3s;
+            transition: all .3s;
+        }
+
+        .quz-item:hover {
+            box-shadow: 0 1px 10px 0 #888888;
+        }
+
+        .quz-tag {
+            font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
+            background: #f1f8ff;
+            border-radius: 4px;
+            color: #3792fd;
+            padding: 0 8px;
+            margin-left: 8px;
+            font-size: .875rem;
+        }
+
+        .quz-tag-correct {
+            font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
+            background: #f1f8ff;
+            border-radius: 4px;
+            color: #3792fd;
+            padding: 0 8px;
+            margin-left: 8px;
+            font-size: .875rem;
+        }
+
+        .quz-tag-correct:after {
+            content: '我做对了';
+        }
+
+        .quz-tag-wrong {
+            font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
+            background: #ffc3c3;
+            color: rgba(206, 57, 57, 0.79);
+            border-radius: 4px;
+            padding: 0 8px;
+            margin-left: 8px;
+            font-size: .875rem;
+        }
+
+        .quz-tag-wrong:after {
+            content: '我做错了';
+        }
+
+        .quz-title-correct {
+            font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
+            color: #2d2d2ddb;
+            padding: 0 8px;
+            font-size: .875rem;
+            cursor: pointer;
+            background-image: linear-gradient(to right, #bdddff, #ffffff);
+        }
+
+        .quz-title-wrong {
+            font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
+            color: #2d2d2ddb;
+            padding: 0 8px;
+            font-size: .875rem;
+            cursor: pointer;
+            background-image: linear-gradient(to right, rgba(206, 57, 57, 0.55), #ffffff);
+        }
+
+        .quz-content {
+            font-weight: 500;
+            color: #3c464f;
+            padding: 0 40px 0 40px;
+        }
+
+        .quz-content p {
+            margin: 0;
+        }
+
+        .quz-options {
+            padding: 0 40px 0 40px;
+            color: rgba(60, 70, 79, 0.92);
+        }
+
+        .quz-idx {
+            padding-left: 10px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #2385f7;
+        }
+
+        .solution-btn {
+            text-decoration: none;
+            border: 1px solid #d9d9d9;
+            -webkit-box-shadow: 0 2px 0 rgba(0, 0, 0, .015);
+            box-shadow: 0 2px 0 rgba(0, 0, 0, .015);
+            cursor: pointer;
+            -webkit-transition: all .3s cubic-bezier(.645, .045, .355, 1);
+            transition: all .3s cubic-bezier(.645, .045, .355, 1);
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -ms-touch-action: manipulation;
+            touch-action: manipulation;
+            height: 32px;
+            padding: 4px 15px;
+            font-size: 14px;
+            border-radius: 2px;
+            color: rgba(0, 0, 0, .65);
+            background: #fff;
+            -moz-transition: all .3s;
+            -o-transition: all .3s;
+            margin-right: 10px;
+        }
+
+        .solution-btn:hover {
+            color: #40a9ff;
+            background: #fff;
+            border-color: #40a9ff;
+        }
+    </style>
+    <title>题目列表</title>
+</head>
 <body style="background: #f5f7fa;">
 
 <div style="margin: 20px auto 0; width: 1024px;">
-    <div style="padding-top: 20px;"><a style="text-decoration: none;color: #2385f7;" target="_blank" href="https://www.fenbi.com/spa/tiku/report/exam/solution/xingce/xingce/<%=exerciseId%>/4">粉笔报告地址</a></div>
-    <div style="padding-top: 20px;">共收录做错题<%=incorrect.length%>道，做对题<%=correct.length%>道(耗时大于<%=costThreshold%>秒)</div>
+    <div style="padding-top: 20px;">
+        <a class="solution-btn" target="_blank"
+           href="https://www.fenbi.com/spa/tiku/report/exam/solution/xingce/xingce/<%= exerciseId %>/4">
+            粉笔报告地址
+        </a>
+        <a id="expand-btn" class="solution-btn" href="javascript:foldAll(<%=incorrect.concat(correct).map(i => i.questionId)%>)">
+            全部收起
+        </a>
+    </div>
+    <p>共收录做错题<%= incorrect.length %>道，做对题<%= correct.length %>道(耗时大于<%= costThreshold %>秒)</p>
     <% for (let q of incorrect.concat(correct)) { %>
-        <div id="<%=q.questionId%>" style="margin-bottom: 20px; padding: 0 30px 30px 30px;background-color:#ffffff;line-height: 2rem;">
-            <p style="color: #2d2d2ddb;margin-left:-30px;padding: 0 8px;font-size: .875rem;background-image: linear-gradient(to right, #bdddff, #ffffff);"><%- q.source.replace(/（网友回忆版）/g, '') %></p>
-            <span style="margin-left: -25px;"> <%- q.idx %>.</span>
-            <% if (q.correct) { %>
-                <span style="background: #f1f8ff;border-radius: 4px;color: #3792fd;padding: 0 8px;font-size: .875rem;">我做对了</span>
-            <% } else { %>
-                <span style="background: #ffc3c3;border-radius: 4px;color: rgba(206,57,57,0.79);padding: 0 8px;font-size: .875rem;">我做错了</span>
-            <% } %>
-            <span style="background: #f1f8ff;border-radius: 4px;color: #3792fd;padding: 0 8px;font-size: .875rem;"> 耗时<%- q.cost %>秒</span>
-            <span style="background: #f1f8ff;border-radius: 4px;color: #3792fd;padding: 0 8px;font-size: .875rem;"> 正确率<%- q.correctRatio.toFixed(2) %>%</span>
-            <div style="font-weight: 500; color: #3c464f;"> <%- q.content %></div>
-            <% for (let opt of q.options) { %>
-                <li style="list-style: upper-alpha"><%= opt %></li>
-            <% } %>
+        <div class="quz-item" id="<%= q.questionId %>">
+            <div class="<%= q.correct ? 'quz-title-correct' : 'quz-title-wrong' %>"
+                 onclick="hideContent(<%= q.questionId %>)">
+                <%- q.source.replace(/（网友回忆版）/g, '') %>
+            </div>
+            <div class="quz-content-fold" id="quz-content-<%= q.questionId %>">
+                <span class="quz-idx"> <%- q.idx %>.</span>
+                <!--            <span class="<%= q.correct ? 'quz-tag-correct' : 'quz-tag-wrong' %>"></span>-->
+                <span class="quz-tag"> 耗时<%- q.cost %>秒</span>
+                <span class="quz-tag"> 正确率<%- q.correctRatio.toFixed(2) %>%</span>
+                <div class="quz-content"> <%- q.content %></div>
+                <div class="quz-options">
+                    <% for (let opt of q.options) { %>
+                        <li style="list-style: upper-alpha"><%= opt %></li>
+                    <% } %>
+                </div>
+            </div>
         </div>
 
-        <div style="padding-left: 30px;margin-top: -10px;margin-bottom: 38px;">
-            <a style="text-decoration: none;background-color: white;color: #65acff;padding: 4px;border: solid 1px;border-color: #c7c5c5;border-radius: 3px;" id="show-ans-<%=q.questionId%>" href="javascript:showSolution(<%=q.questionId%>);">查看解析</a>
+        <div class="quz-other-fold" style="margin-top: -10px;margin-bottom: 38px;">
+            <a class="solution-btn" id="show-ans-<%= q.questionId %>"
+               href="javascript:showSolution(<%= q.questionId %>);">
+                查看解析
+            </a>
         </div>
-        <div id="ans-<%=q.questionId%>" style="padding: 0 30px;display:none">
+        <div class="quz-other-fold" id="ans-<%= q.questionId %>" style="padding: 0 30px;display:none">
             <%- q.solution %>
         </div>
     <% } %>
@@ -34,12 +177,50 @@
     function showSolution(questionId) {
         let dis = document.getElementById(`ans-${questionId}`).style.display;
         if (dis === 'none') {
-            document.getElementById(`ans-${questionId}`).style.display="block";
-            document.getElementById(`show-ans-${questionId}`).innerHTML="收起解析";
+            document.getElementById(`ans-${questionId}`).style.display = "block";
+            document.getElementById(`show-ans-${questionId}`).innerHTML = "收起解析";
         } else {
-            document.getElementById(`ans-${questionId}`).style.display="none";
-            document.getElementById(`show-ans-${questionId}`).innerHTML="查看解析";
+            document.getElementById(`ans-${questionId}`).style.display = "none";
+            document.getElementById(`show-ans-${questionId}`).innerHTML = "查看解析";
         }
+    }
+
+    function hideContent(questionId, fold) {
+        let unExpand = () => {
+            document.getElementById(`quz-content-${questionId}`).style.display = "none";
+            document.getElementById(`ans-${questionId}`).style.display = "none";
+            document.getElementById(`show-ans-${questionId}`).style.display = "none";
+        };
+        let expand = () => {
+            document.getElementById(`quz-content-${questionId}`).style.display = "block";
+            document.getElementById(`show-ans-${questionId}`).style.display = "inline";
+        }
+        if (fold != null && fold === true) {
+            expand();
+        } else if (fold != null && fold === false) {
+            unExpand();
+        } else {
+            let dis = document.getElementById(`quz-content-${questionId}`).style.display;
+            if (dis === 'none') {
+                expand();
+            } else {
+                unExpand();
+            }
+        }
+    }
+
+    // 下一步的动作
+    var fold = false;
+    function foldAll(...questionIds) {
+        if (!fold) {
+            document.getElementById(`expand-btn`).innerHTML = "全部收起";
+        } else {
+            document.getElementById(`expand-btn`).innerHTML = "全部展开";
+        }
+        questionIds.forEach(questionId => {
+            hideContent(questionId, fold)
+        });
+        fold = !fold;
     }
 </script>
 </html>
