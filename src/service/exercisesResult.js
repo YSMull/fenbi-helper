@@ -1,10 +1,8 @@
-const _ = require('lodash')
-const moment = require('moment')
+const _ = require('lodash');
+const moment = require('moment');
 
 const {httpRequest} = require('../util/httpUtil');
-
-
-// let exerciseId = 1022904952;
+const {login} = require('../service/loginService');
 
 let headers = {
     "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
@@ -14,9 +12,11 @@ let headers = {
     "sec-fetch-mode": "navigate",
     "sec-fetch-site": "none",
     "sec-fetch-user": "?1",
-    "upgrade-insecure-requests": "1",
-    "cookie": "sid=7416563815331997892; persistent=H9eAWL2PCPLL8bhDi/48uI2pAeNcJ1J+QPHYufroaKyEtjDaewdsV2UiqEm5tJCswDN9sNvX7TxAkAzQuTpxog==; sess=C+nk7FWUnyBPAsQ1ag6ZB+n2CaGJ0EwAlVYggDJnJtSGeeXJN+f72tfHxAVvdIvhSJO0yrNiWXjInhiKr/dE6RVqaM1LSdiWzT5785laQq4=; userid=65047752"
+    "upgrade-insecure-requests": "1"
 };
+(async function () {
+    headers.cookie = await login();
+})();
 
 async function getQuestionByIds(questionIds) {
     let questions = await httpRequest({
@@ -91,8 +91,6 @@ async function getSolutionsByIds(questionIds) {
 
 exports.getExerciseHistory = async function () {
     let exerciseHistory = await getExerciseHistory();
-    // exerciseHistory.map()
-    // let resultObj = await getExerciseReport(9999);
     exerciseHistory = exerciseHistory.filter(h => h.status === 1);
     let exerciseReportMap = _.zipObject(exerciseHistory.map(item => item.id), await Promise.all(exerciseHistory.map(item => getExerciseReport(item.id))));
     exerciseHistory.forEach(history => {
@@ -104,7 +102,6 @@ exports.getExerciseHistory = async function () {
             history.correctRate = report.correctRate;
         }
     });
-
 
     return {
         exerciseHistory: exerciseHistory.filter(h => h.status === 1),

@@ -15,7 +15,8 @@
     "koa-ejs": "^4.3.0",
     "koa-router": "^9.0.1",
     "lodash": "^4.17.15",
+    "moment": "^2.27.0",
     "request": "^2.88.2",
-    "moment": "^2.27.0"
+    "set-cookie-parser": "^2.4.6"
   }
 }
