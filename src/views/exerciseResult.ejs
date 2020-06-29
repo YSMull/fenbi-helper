@@ -17,9 +17,10 @@
 
         .quz-tag {
             font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
-            background: #f1f8ff;
+            background: #fbfdffb5;
             border-radius: 4px;
-            color: #3792fd;
+            border: solid 1px #dedede;
+            color: #8c939a;
             padding: 0 8px;
             margin-left: 8px;
             font-size: .875rem;
@@ -74,7 +75,7 @@
         .quz-content {
             font-weight: 500;
             color: #3c464f;
-            padding: 0 40px 0 40px;
+            padding: 0 40px 10px 40px;
         }
 
         .quz-content p {
@@ -88,6 +89,16 @@
 
         .quz-idx {
             padding-left: 10px;
+            position: absolute;
+        }
+
+        .quz-content-fold {
+            padding-bottom: 10px;
+            padding-top: 10px;
+        }
+
+        .quz-tag-group {
+            float: right;
         }
 
         a {
@@ -125,6 +136,20 @@
             background: #fff;
             border-color: #40a9ff;
         }
+
+        .noselect {
+            -webkit-touch-callout: none; /* iOS Safari */
+
+            -webkit-user-select: none; /* Chrome/Safari/Opera */
+
+            -khtml-user-select: none; /* Konqueror */
+
+            -moz-user-select: none; /* Firefox */
+
+            -ms-user-select: none; /* Internet Explorer/Edge */
+
+            user-select: none;
+        }
     </style>
     <title>题目列表</title>
 </head>
@@ -136,22 +161,26 @@
            href="https://www.fenbi.com/spa/tiku/report/exam/solution/xingce/xingce/<%= exerciseId %>/4">
             粉笔报告地址
         </a>
-        <a id="expand-btn" class="solution-btn" href="javascript:foldAll(<%=incorrect.concat(correct).map(i => i.questionId)%>)">
+        <a id="expand-btn" class="solution-btn"
+           href="javascript:foldAll(<%= incorrect.concat(correct).map(i => i.questionId) %>)">
             全部收起
         </a>
     </div>
     <p>共收录做错题<%= incorrect.length %>道，做对题<%= correct.length %>道(耗时大于<%= costThreshold %>秒)</p>
     <% for (let q of incorrect.concat(correct)) { %>
         <div class="quz-item" id="<%= q.questionId %>">
-            <div class="<%= q.correct ? 'quz-title-correct' : 'quz-title-wrong' %>"
+            <div class="<%= q.correct ? 'quz-title-correct' : 'quz-title-wrong' %> noselect"
                  onclick="hideContent(<%= q.questionId %>)">
-                <%- q.source.replace(/（网友回忆版）/g, '') %>
+                <span><%= cleanTitle(q.source) %></span>
+                <span class="quz-tag-group">
+                    <span class="quz-tag"> 耗时<%- q.cost %>秒</span>
+                    <span class="quz-tag"> 正确率<%- q.correctRatio.toFixed(2) %>%</span>
+                </span>
+
             </div>
             <div class="quz-content-fold" id="quz-content-<%= q.questionId %>">
-                <span class="quz-idx"> <%- q.idx %>.</span>
+                <span class="quz-idx"> <%- q.idx+1 %>.</span>
                 <!--            <span class="<%= q.correct ? 'quz-tag-correct' : 'quz-tag-wrong' %>"></span>-->
-                <span class="quz-tag"> 耗时<%- q.cost %>秒</span>
-                <span class="quz-tag"> 正确率<%- q.correctRatio.toFixed(2) %>%</span>
                 <div class="quz-content"> <%- q.content %></div>
                 <div class="quz-options">
                     <% for (let opt of q.options) { %>
@@ -211,6 +240,7 @@
 
     // 下一步的动作
     var fold = false;
+
     function foldAll(...questionIds) {
         if (!fold) {
             document.getElementById(`expand-btn`).innerHTML = "全部收起";
@@ -222,5 +252,15 @@
         });
         fold = !fold;
     }
+    <%
+    // 这个函数定义在 ejs 里面
+    function cleanTitle(title) {
+        return title.replace(/辽宁\/湖南\/湖北\/安徽\/四川\/福建\/云南\/黑龙江\/江西\/广西\/贵州\/海南\/内蒙古\/山西\/重庆\/宁夏\/西藏/g, '湖北')
+                .replace(/（网友回忆版）/g, '')
+                .replace(/第\d+题/g, '')
+                .replace(/县级\+乡镇/g, '县级');
+    }
+    %>
+
 </script>
 </html>
