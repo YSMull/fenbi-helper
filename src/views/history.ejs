@@ -17,7 +17,7 @@
     }
 
     .his-tag {
-        font-family: "Sarasa Mono HC","Droid Sans Mono","monospace",".SF NS Mono", serif;
+        font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
         background: #f1f8ff;
         border-radius: 4px;
         color: #3792fd;
@@ -27,7 +27,7 @@
     }
 
     .his-title {
-        font-family: "Sarasa Mono HC","Droid Sans Mono","monospace",".SF NS Mono", serif;
+        font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
         color: #2d2d2ddb;
         padding: 0 8px;
         font-size: .875rem;
@@ -35,7 +35,7 @@
     }
 
     .his-time {
-        font-family: "Sarasa Mono HC","Droid Sans Mono","monospace",".SF NS Mono", serif;
+        font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
         font-size: 16px;
         position: absolute;
         right: 376px;
@@ -50,9 +50,8 @@
                 <span><%= history.sheet.name %></span>
                 <span class="his-time"><%= history.finishedTime %></span>
             </div>
-            <span class="his-tag">共<%= history.questionCount %>题</span>
-<!--            <span class="his-tag">答对<%= history.correctCount %>题</span>-->
-            <span class="his-tag">耗时<%=Math.round(moment.duration(history.elapsedTime, 'seconds').asMinutes().toFixed(1))%>分钟</span>
+            <span class="his-tag">做了<%= history.answerCount %>题</span>
+            <span class="his-tag">耗时<%= Math.round(moment.duration(history.elapsedTime, 'seconds').asMinutes().toFixed(1)) %>分钟</span>
             <span class="his-tag">正确率<%= history.correctRate %>%</span>
             <span class="his-tag"><%= history.client %></span>
         </div>

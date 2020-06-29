@@ -66,11 +66,11 @@ function getExercise(exerciseId) {
     });
 }
 
-async function getExerciseHistory() {
+async function getExerciseHistory(categoryId) {
     let cursorArr = [0, 30];
     let hisArr = await Promise.all(cursorArr.map(cursor => {
         return httpRequest({
-            url: `https://tiku.fenbi.com/api/xingce/category-exercises?categoryId=3&cursor=${cursor}&count=30`,
+            url: `https://tiku.fenbi.com/api/xingce/category-exercises?categoryId=${categoryId}&cursor=${cursor}&count=30`,
             method: "GET",
             json: true,
             headers
@@ -90,18 +90,22 @@ async function getSolutionsByIds(questionIds) {
 }
 
 exports.getExerciseHistory = async function () {
-    let exerciseHistory = await getExerciseHistory();
-    exerciseHistory = exerciseHistory.filter(h => h.status === 1);
+    let result = await Promise.all([
+        getExerciseHistory(1),
+        getExerciseHistory(3)
+    ]);
+    let exerciseHistory = _.orderBy(_.flatMap(result, _.identity), ['updatedTime'], ['desc']);
     let exerciseReportMap = _.zipObject(exerciseHistory.map(item => item.id), await Promise.all(exerciseHistory.map(item => getExerciseReport(item.id))));
     exerciseHistory.forEach(history => {
         history.finishedTime = moment(history.updatedTime).format('YYYY-MM-DD HH:mm:ss')
-
         let report = exerciseReportMap[history.id];
         if (report) {
             history.elapsedTime = report.elapsedTime;
-            history.correctRate = report.correctRate;
+            history.answerCount = report.answerCount;
+            history.correctRate = (report.correctCount / report.answerCount * 100).toFixed(1);
         }
     });
+    exerciseHistory = exerciseHistory.filter(h => h.status === 1 && h.answerCount > 0);
 
     return {
         exerciseHistory: exerciseHistory.filter(h => h.status === 1),
