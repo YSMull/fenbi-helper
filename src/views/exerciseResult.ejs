@@ -219,6 +219,7 @@
             document.getElementById(`quz-content-${questionId}`).style.display = "none";
             document.getElementById(`ans-${questionId}`).style.display = "none";
             document.getElementById(`show-ans-${questionId}`).style.display = "none";
+            document.getElementById(`show-ans-${questionId}`).innerHTML = "查看解析";
         };
         let expand = () => {
             document.getElementById(`quz-content-${questionId}`).style.display = "block";
