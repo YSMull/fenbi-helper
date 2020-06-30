@@ -146,6 +146,8 @@ exports.getResultObj = async function (exerciseId, costThreshold) {
 
     concernQuestions = _.orderBy(concernQuestions, ['correct', 'cost', 'idx'], ['asc', 'desc', 'asc']);
 
+    let concernSource = ['国家', '联考', '省', '市'];
+    let concernSourceCountMap = {};
     concernQuestions.forEach(q => {
         let solutionObj = solutionMap[q.questionId];
         // 题干
@@ -158,6 +160,15 @@ exports.getResultObj = async function (exerciseId, costThreshold) {
         q.correctAnswer = solutionObj.correctAnswer;
         // 题目来源
         q.source = solutionObj.source;
+
+        concernSource.some(item => {
+            if (q.source.includes(item)) {
+                concernSourceCountMap[item] = (concernSourceCountMap[item] || 0) + 1;
+                return true;
+            }
+            return false;
+        })
+
         // 答案解析
         q.solution = solutionObj.solution; // html
 
@@ -173,6 +184,7 @@ exports.getResultObj = async function (exerciseId, costThreshold) {
     return {
         exerciseId,
         costThreshold,
+        concernSourceCount: Object.keys(concernSourceCountMap).map(key => ({key, count: concernSourceCountMap[key]})),
         incorrect,
         correct
     }
