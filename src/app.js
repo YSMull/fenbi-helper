@@ -40,6 +40,10 @@ router.del('/api/collect/:questionId', async ctx => {
     ctx.body = '';
 });
 
+router.get('/api/video/:questionId', async ctx => {
+    let questionId = ctx.params.questionId;
+    ctx.body = await exerciseResult.getVideoUrl(questionId);
+})
 app.use(router.routes()).use(router.allowedMethods())
 
 app.listen(3000);

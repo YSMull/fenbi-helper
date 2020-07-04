@@ -99,6 +99,16 @@ async function getSolutionsByIds(questionIds) {
     return _.zipObject(questionIds, questions);
 }
 
+async function getVideoIdByIds(questionIds) {
+    let result = await httpRequest({
+        url: `https://ke.fenbi.com/api/gwy/v3/episodes/tiku_episodes_with_multi_type?tiku_ids=${questionIds.join(',')}&tiku_prefix=xingce&tiku_type=5`,
+        method: "GET",
+        json: true,
+        headers
+    });
+    return result.data;
+}
+
 exports.getExerciseHistory = async function () {
     let result = await Promise.all([
         getExerciseHistory(1),
@@ -219,4 +229,24 @@ exports.delCollect = async function (questionId) {
         method: "DELETE",
         headers
     });
+}
+
+exports.getVideoUrl = async function (questionId) {
+
+    let videoMap = await getVideoIdByIds([questionId]);
+    if (videoMap[questionId]) {
+        let videoResult = await httpRequest({
+            url: `https://ke.fenbi.com/api/gwy/v3/episodes/${videoMap[questionId][0].id}/mediafile/meta`,
+            method: "GET",
+            headers,
+            json: true
+        });
+        if (videoResult && videoResult.datas && videoResult.datas.length > 0) {
+            return _.orderBy(videoResult.datas, ['realSize'], ['desc'])[0].url;
+        } else {
+            return null;
+        }
+    } else {
+        return null;
+    }
 }

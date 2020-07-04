@@ -314,11 +314,16 @@
                href="javascript:showSolution(<%= q.questionId %>);">
                 查看解析
             </a>
+            <a class="solution-btn" id="show-video-<%= q.questionId %>"
+               href="javascript:showVideoSolution(<%= q.questionId %>);">
+                视频解析
+            </a>
             <a class="solution-btn" id="collect-<%= q.questionId %>"
                href="javascript:collect(<%= q.questionId %>);">
                 <% if (q.hasCollect) { %>取消收藏<% } else { %>收藏<% } %>
             </a>
         </div>
+        <video class="video-solution" id="video-<%= q.questionId %>" width="400" style="display: none; margin: -10px 0 20px 0;" controls></video>
         <div class="quz-other-fold" id="ans-<%= q.questionId %>" style="padding: 0 30px;display:none">
             <%- q.solution %>
         </div>
@@ -337,28 +342,55 @@
         }
     }
 
+    function showVideoSolution(questionId) {
+        let video = document.getElementById(`video-${questionId}`);
+        let source = document.createElement('source');
+        source.type = 'video/mp4';
+        let dis = video.style.display;
+        if (dis === 'none') {
+            if (video.currentSrc) {
+                video.style.display = 'inline';
+                return;
+            }
+            fetch(`/api/video/${questionId}`, {
+                method: 'GET'
+            }).then(response => {
+                if (response.status === 200) {
+                    document.getElementById(`show-video-${questionId}`).innerHTML = "收起视频";
+                    return response.text();
+                }
+            }).then(url => {
+                source.src = url;
+                video.appendChild(source);
+                video.style.display = 'inline';
+            });
+        } else {
+            video.pause();
+            video.style.display = 'none';
+            document.getElementById(`show-video-${questionId}`).innerHTML = "视频解析";
+        }
+    }
+
     function collect(questionId) {
         let dis = document.getElementById(`quz-tag-collect-${questionId}`).style.display;
         if (dis === "none") {
             fetch(`/api/collect/${questionId}`, {
                 method: 'POST'
             }).then(response => {
-                    if (response.status === 200) {
-                        document.getElementById(`quz-tag-collect-${questionId}`).style.display = "inline";
-                        document.getElementById(`collect-${questionId}`).innerHTML = "取消收藏";
-                    }
+                if (response.status === 200) {
+                    document.getElementById(`quz-tag-collect-${questionId}`).style.display = "inline";
+                    document.getElementById(`collect-${questionId}`).innerHTML = "取消收藏";
                 }
-            )
+            })
         } else {
             fetch(`/api/collect/${questionId}`, {
                 method: 'DELETE'
             }).then(response => {
-                    if (response.status === 200) {
-                        document.getElementById(`quz-tag-collect-${questionId}`).style.display = "none";
-                        document.getElementById(`collect-${questionId}`).innerHTML = "收藏";
-                    }
+                if (response.status === 200) {
+                    document.getElementById(`quz-tag-collect-${questionId}`).style.display = "none";
+                    document.getElementById(`collect-${questionId}`).innerHTML = "收藏";
                 }
-            )
+            })
         }
     }
 
@@ -366,13 +398,26 @@
         let unExpand = () => {
             document.getElementById(`quz-content-${questionId}`).style.display = "none";
             document.getElementById(`ans-${questionId}`).style.display = "none";
+
             document.getElementById(`show-ans-${questionId}`).style.display = "none";
             document.getElementById(`show-ans-${questionId}`).innerHTML = "查看解析";
+
+            document.getElementById(`show-video-${questionId}`).style.display = "none";
+            document.getElementById(`show-video-${questionId}`).innerHTML = "视频解析";
+
             document.getElementById(`collect-${questionId}`).style.display = "none";
+
+            let videos = document.getElementsByClassName('video-solution');
+            for (let video of videos) {
+                video.pause();
+                video.style.display = 'none';
+            }
         };
+
         let expand = () => {
             document.getElementById(`quz-content-${questionId}`).style.display = "block";
             document.getElementById(`show-ans-${questionId}`).style.display = "inline";
+            document.getElementById(`show-video-${questionId}`).style.display = "inline";
             document.getElementById(`collect-${questionId}`).style.display = "inline";
         }
         if (fold != null && fold === true) {
