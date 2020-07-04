@@ -276,6 +276,12 @@
             <div class="<%= q.correct ? 'quz-title-correct' : 'quz-title-wrong' %> noselect"
                  onclick="hideContent(<%= q.questionId %>)">
                 <span><%= cleanTitle(q.source) %></span>
+                <% for (let point of q.keypoints) { %>
+                    <span class="quz-tag"><%= point %></span>
+                <% } %>
+                <% for (let tag of q.tags) { %>
+                    <span class="quz-tag"><%= tag %></span>
+                <% } %>
                 <span class="quz-tag-group">
                     <span class="quz-tag-collect" style="display: <%=((hasCollect) => {
                         if (hasCollect) return 'inline';

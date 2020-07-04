@@ -184,6 +184,9 @@ exports.getResultObj = async function (exerciseId, costThreshold) {
 
         q.hasCollect = collectionIds.some(qid => qid === q.questionId);
 
+        q.keypoints = solutionObj.keypoints.map(i => i.name);
+        q.tags = solutionObj.tags.map(i => i.name);
+
         // 答案解析
         q.solution = solutionObj.solution; // html
 
@@ -192,7 +195,6 @@ exports.getResultObj = async function (exerciseId, costThreshold) {
         q.correctRatio = solutionObj.questionMeta.correctRatio;
 
         // q.userAnswer = solutionObj.userAnswer;
-        q.keypoints = solutionObj.keypoints;
     });
     return {
         exerciseId,
