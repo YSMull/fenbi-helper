@@ -448,9 +448,9 @@
 
     function foldAll(...questionIds) {
         if (!fold) {
-            document.getElementById(`expand-btn`).innerHTML = "全部收起";
-        } else {
             document.getElementById(`expand-btn`).innerHTML = "全部展开";
+        } else {
+            document.getElementById(`expand-btn`).innerHTML = "全部收起";
         }
         questionIds.forEach(questionId => {
             hideContent(questionId, fold)

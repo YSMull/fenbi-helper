@@ -44,6 +44,11 @@ router.get('/api/video/:questionId', async ctx => {
     let questionId = ctx.params.questionId;
     ctx.body = await exerciseResult.getVideoUrl(questionId);
 })
+
+router.all('/', async ctx => {
+    ctx.redirect('/history');
+})
+
 app.use(router.routes()).use(router.allowedMethods())
 
 app.listen(3000);
