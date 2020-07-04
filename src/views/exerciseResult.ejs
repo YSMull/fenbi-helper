@@ -26,6 +26,17 @@
             font-size: .875rem;
         }
 
+        .quz-tag-collect {
+            font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
+            background: rgb(16, 142, 233);
+            border-radius: 4px;
+            border: solid 1px #dedede;
+            color: #fff;
+            padding: 0 8px;
+            margin-left: 8px;
+            font-size: .875rem;
+        }
+
         .quz-tag-correct {
             font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
             background: #f1f8ff;
@@ -157,6 +168,12 @@
             padding: 0 5px 0 5px;
         }
 
+        .collect-count {
+            color: #0099ff;
+            font-size: 28px;
+            padding: 0 5px 0 5px;
+        }
+
         .cost-count {
             color: darkorange;
             font-size: 28px;
@@ -241,7 +258,7 @@
             粉笔报告地址
         </a>
         <a id="expand-btn" class="solution-btn"
-           href="javascript:foldAll(<%= incorrect.concat(correct).map(i => i.questionId) %>)">
+           href="javascript:foldAll(<%= concernQuestions.map(i => i.questionId) %>)">
             全部收起
         </a>
         <% for(let cSource of concernSourceCount) { %>
@@ -249,16 +266,20 @@
         <% } %>
     </div>
     <p>
-        共收录做错题<span class="wrong-count"><%= incorrect.length %></span>道，做对题<span
-                class="cost-count"><%= correct.length %></span>道
+        做错<span class="wrong-count"><%= concernQuestions.filter(q => !q.correct).length %></span>道，
+        收藏<span class="collect-count"><%= concernQuestions.filter(q => q.hasCollect).length %></span>道，
+        做对但超时<span class="cost-count"><%= concernQuestions.filter(q => q.correct).length %></span>道
         <span class="comment">(耗时大于<%= costThreshold %>秒)</span>
     </p>
-    <% for (let q of incorrect.concat(correct)) { %>
+    <% for (let q of concernQuestions) { %>
         <div class="quz-item" id="<%= q.questionId %>">
             <div class="<%= q.correct ? 'quz-title-correct' : 'quz-title-wrong' %> noselect"
                  onclick="hideContent(<%= q.questionId %>)">
                 <span><%= cleanTitle(q.source) %></span>
                 <span class="quz-tag-group">
+                    <% if (q.hasCollect) { %>
+                        <span class="quz-tag-collect">收藏</span>
+                    <% } %>
                     <span class="quz-tag"> 耗时<%- q.cost %>秒</span>
                     <span class="quz-tag-<%=((r) => {
                         if (r > 80) return 1;
@@ -266,7 +287,8 @@
                         if (r > 40) return 3;
                         if (r > 20) return 4;
                         return 5;
-                    })(q.correctRatio)%>"> 正确率<%- q.correctRatio.toFixed(2) %>%</span>
+                    })(q.correctRatio)%>"> 正确率<%- q.correctRatio.toFixed(2)+ '%' %>
+                    </span>
                 </span>
             </div>
             <div class="quz-content-fold" id="quz-content-<%= q.questionId %>">

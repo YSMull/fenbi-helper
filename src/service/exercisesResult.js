@@ -48,6 +48,16 @@ async function getQuestionKeyPointsByIds(questionIds) {
     return _.zipObject(questionIds, questions);
 }
 
+// 返回收藏了的题目的id数组
+async function getCollectsByIds(questionIds) {
+    return await httpRequest({
+        url: `https://tiku.fenbi.com/api/xingce/collects?ids=${questionIds.join(',')}`,
+        method: "GET",
+        json: true,
+        headers
+    });
+}
+
 function getExerciseReport(exerciseId) {
     return httpRequest({
         url: `https://tiku.fenbi.com/api/xingce/exercises/${exerciseId}/report/v2`,
@@ -116,10 +126,13 @@ exports.getExerciseHistory = async function () {
 exports.getResultObj = async function (exerciseId, costThreshold) {
     let [exercise, report] = await Promise.all([getExercise(exerciseId), getExerciseReport(exerciseId)]);
 
+    let collectionIds = await getCollectsByIds(report.answers.map(answer => answer.questionId));
+
     let answerResultMap = {};
+
     report.answers.forEach(answer => {
         // 只筛选出你做了的
-        if (answer.status !== 10) {
+        if (answer.status !== 10 || collectionIds.includes(answer.questionId)) {
             answerResultMap[answer.questionId] = answer.correct;
         }
     });
@@ -167,7 +180,9 @@ exports.getResultObj = async function (exerciseId, costThreshold) {
                 return true;
             }
             return false;
-        })
+        });
+
+        q.hasCollect = collectionIds.some(qid => qid === q.questionId);
 
         // 答案解析
         q.solution = solutionObj.solution; // html
@@ -179,14 +194,11 @@ exports.getResultObj = async function (exerciseId, costThreshold) {
         // q.userAnswer = solutionObj.userAnswer;
         q.keypoints = solutionObj.keypoints;
     });
-    let incorrect = concernQuestions.filter(q => !q.correct)
-    let correct = concernQuestions.filter(q => q.correct)
     return {
         exerciseId,
         costThreshold,
         concernSourceCount: Object.keys(concernSourceCountMap).map(key => ({key, count: concernSourceCountMap[key]})),
-        incorrect,
-        correct
+        concernQuestions
     }
 }
 
