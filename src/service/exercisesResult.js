@@ -202,4 +202,19 @@ exports.getResultObj = async function (exerciseId, costThreshold) {
     }
 }
 
+exports.addCollect = async function (questionId) {
+    return await httpRequest({
+        url: `https://tiku.fenbi.com/api/xingce/collects/${questionId}`,
+        method: "POST",
+        headers,
+        body: null
+    });
+}
 
+exports.delCollect = async function (questionId) {
+    await httpRequest({
+        url: `https://tiku.fenbi.com/api/xingce/collects/${questionId}`,
+        method: "DELETE",
+        headers
+    });
+}

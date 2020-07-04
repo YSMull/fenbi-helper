@@ -28,6 +28,17 @@ router.get('/history', async ctx => {
     await ctx.render('history', await exerciseResult.getExerciseHistory());
 });
 
+router.post('/api/collect/:questionId', async ctx => {
+    let questionId = ctx.params.questionId;
+    await exerciseResult.addCollect(questionId);
+    ctx.body = '';
+});
+
+router.del('/api/collect/:questionId', async ctx => {
+    let questionId = ctx.params.questionId;
+    await exerciseResult.delCollect(questionId);
+    ctx.body = '';
+});
 
 app.use(router.routes()).use(router.allowedMethods())
 

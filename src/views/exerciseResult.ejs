@@ -277,9 +277,10 @@
                  onclick="hideContent(<%= q.questionId %>)">
                 <span><%= cleanTitle(q.source) %></span>
                 <span class="quz-tag-group">
-                    <% if (q.hasCollect) { %>
-                        <span class="quz-tag-collect">收藏</span>
-                    <% } %>
+                    <span class="quz-tag-collect" style="display: <%=((hasCollect) => {
+                        if (hasCollect) return 'inline';
+                        else return 'none';
+                    })(q.hasCollect)%>" id="quz-tag-collect-<%= q.questionId %>">收藏</span>
                     <span class="quz-tag"> 耗时<%- q.cost %>秒</span>
                     <span class="quz-tag-<%=((r) => {
                         if (r > 80) return 1;
@@ -293,7 +294,6 @@
             </div>
             <div class="quz-content-fold" id="quz-content-<%= q.questionId %>">
                 <span class="quz-idx"> <%- q.idx + 1 %>.</span>
-                <!--            <span class="<%= q.correct ? 'quz-tag-correct' : 'quz-tag-wrong' %>"></span>-->
                 <div class="quz-content"> <%- q.content %></div>
                 <div class="quz-options">
                     <% for (let opt of q.options) { %>
@@ -307,6 +307,10 @@
             <a class="solution-btn" id="show-ans-<%= q.questionId %>"
                href="javascript:showSolution(<%= q.questionId %>);">
                 查看解析
+            </a>
+            <a class="solution-btn" id="collect-<%= q.questionId %>"
+               href="javascript:collect(<%= q.questionId %>);">
+                <% if (q.hasCollect) { %>取消收藏<% } else { %>收藏<% } %>
             </a>
         </div>
         <div class="quz-other-fold" id="ans-<%= q.questionId %>" style="padding: 0 30px;display:none">
@@ -327,16 +331,43 @@
         }
     }
 
+    function collect(questionId) {
+        let dis = document.getElementById(`quz-tag-collect-${questionId}`).style.display;
+        if (dis === "none") {
+            fetch(`/api/collect/${questionId}`, {
+                method: 'POST'
+            }).then(response => {
+                    if (response.status === 200) {
+                        document.getElementById(`quz-tag-collect-${questionId}`).style.display = "inline";
+                        document.getElementById(`collect-${questionId}`).innerHTML = "取消收藏";
+                    }
+                }
+            )
+        } else {
+            fetch(`/api/collect/${questionId}`, {
+                method: 'DELETE'
+            }).then(response => {
+                    if (response.status === 200) {
+                        document.getElementById(`quz-tag-collect-${questionId}`).style.display = "none";
+                        document.getElementById(`collect-${questionId}`).innerHTML = "收藏";
+                    }
+                }
+            )
+        }
+    }
+
     function hideContent(questionId, fold) {
         let unExpand = () => {
             document.getElementById(`quz-content-${questionId}`).style.display = "none";
             document.getElementById(`ans-${questionId}`).style.display = "none";
             document.getElementById(`show-ans-${questionId}`).style.display = "none";
             document.getElementById(`show-ans-${questionId}`).innerHTML = "查看解析";
+            document.getElementById(`collect-${questionId}`).style.display = "none";
         };
         let expand = () => {
             document.getElementById(`quz-content-${questionId}`).style.display = "block";
             document.getElementById(`show-ans-${questionId}`).style.display = "inline";
+            document.getElementById(`collect-${questionId}`).style.display = "inline";
         }
         if (fold != null && fold === true) {
             expand();
