@@ -207,7 +207,8 @@ exports.getResultObj = async function (exerciseId, costThreshold) {
         // q.userAnswer = solutionObj.userAnswer;
     });
     return {
-        exerciseId,
+        moment,
+        exercise,
         costThreshold,
         concernSourceCount: Object.keys(concernSourceCountMap).map(key => ({key, count: concernSourceCountMap[key]})),
         concernQuestions

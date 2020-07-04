@@ -252,18 +252,27 @@
 <body style="background: #f5f7fa;">
 
 <div style="margin: 20px auto 0; width: 1024px;">
+    <h2 style="text-align: center"><%=exercise.sheet.name%></h2>
+    <div style="text-align: center">
+        <span><%=moment(exercise.updatedTime).format('YYYY 年 MM 月 DD 日 HH:mm')%></span>
+    </div>
+    <div style="text-align: center">
+        <span>耗时<span style="color: blue"><%= Math.round(moment.duration(exercise.elapsedTime, 'seconds').asMinutes().toFixed(1)) %></span>分钟</span>
+    </div>
+    <div style="text-align: center; margin-top: 10px">
+        <% for(let cSource of concernSourceCount) { %>
+            <span class="quz-tag" style="margin-left: 0"> <%= cSource.key %>: <%= cSource.count %>题</span>
+        <% } %>
+    </div>
     <div style="padding-top: 20px;">
         <a class="solution-btn" target="_blank"
-           href="https://www.fenbi.com/spa/tiku/report/exam/solution/xingce/xingce/<%= exerciseId %>/4">
+           href="https://www.fenbi.com/spa/tiku/report/exam/solution/xingce/xingce/<%= exercise.id %>/4">
             粉笔报告地址
         </a>
         <a id="expand-btn" class="solution-btn"
            href="javascript:foldAll(<%= concernQuestions.map(i => i.questionId) %>)">
             全部收起
         </a>
-        <% for(let cSource of concernSourceCount) { %>
-            <span class="quz-tag"> <%= cSource.key %>: <%= cSource.count %>题</span>
-        <% } %>
     </div>
     <p>
         做错<span class="wrong-count"><%= concernQuestions.filter(q => !q.correct).length %></span>道，
