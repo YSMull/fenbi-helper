@@ -147,18 +147,14 @@ exports.getResultObj = async function (exerciseId, costThreshold) {
         }
     });
 
-    let concernQuestions = Object.keys(exercise.userAnswers).map(idx => {
-        let ua = exercise.userAnswers[idx];
-        let correct = answerResultMap[ua.questionId];
-        if (ua.time > costThreshold || !correct) {
-            return {
-                idx: ua.questionIndex,
-                questionId: ua.questionId,
-                correct,
-                cost: ua.time
-            }
-        } else {
-            return null;
+    let concernQuestions = Object.keys(answerResultMap).map(questionId => {
+        let ua = Object.values(exercise.userAnswers).find(item => item.questionId == questionId);
+        let correct = answerResultMap[questionId];
+        return {
+            idx: (ua && ua.questionIndex) || report.answers.findIndex(item => item.questionId == questionId) + 1,
+            questionId,
+            correct,
+            cost: ua && ua.time
         }
     }).filter(a => a);
 
@@ -192,7 +188,7 @@ exports.getResultObj = async function (exerciseId, costThreshold) {
             return false;
         });
 
-        q.hasCollect = collectionIds.some(qid => qid === q.questionId);
+        q.hasCollect = collectionIds.some(qid => qid == q.questionId);
 
         q.keypoints = solutionObj.keypoints.map(i => i.name);
         q.tags = solutionObj.tags.map(i => i.name);

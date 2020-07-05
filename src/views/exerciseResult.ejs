@@ -85,6 +85,15 @@
             background-image: linear-gradient(to right, #bdddff, #ffffff);
         }
 
+        .quz-title-timeout {
+            font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
+            color: #2d2d2ddb;
+            padding: 0 8px;
+            font-size: .875rem;
+            cursor: pointer;
+            background-image: linear-gradient(to right, rgba(255, 140, 0, 0.7), #ffffff);
+        }
+
         .quz-title-wrong {
             font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
             color: #2d2d2ddb;
@@ -301,14 +310,19 @@
         </a>
     </div>
     <p>
-        做错<span class="wrong-count"><%= concernQuestions.filter(q => !q.correct).length %></span>道，
-        收藏<span class="collect-count"><%= concernQuestions.filter(q => q.hasCollect).length %></span>道，
-        做对但超时<span class="cost-count"><%= concernQuestions.filter(q => q.correct).length %></span>道
+        做错<span class="wrong-count"><%= concernQuestions.filter(q => !q.correct).length %></span>题，
+        做对但超时<span class="cost-count"><%= concernQuestions.filter(q => q.cost > costThreshold && q.correct).length %></span>题，
+        错误率<span class="wrong-count"><%= (concernQuestions.filter(q => !q.correct).length / concernQuestions.length * 100).toFixed(1) + '%' %></span>，
+        超时率<span class="cost-count"><%= (concernQuestions.filter(q => q.cost > costThreshold && q.correct).length / concernQuestions.length * 100).toFixed(1) + '%' %></span>
         <span class="comment">(耗时大于<%= costThreshold %>秒)</span>
     </p>
     <% for (let q of concernQuestions) { %>
         <div class="quz-item" id="<%= q.questionId %>">
-            <div class="<%= q.correct ? 'quz-title-correct' : 'quz-title-wrong' %> noselect"
+            <div class="<%= ((q) => {
+                if (!q.correct) return 'quz-title-wrong';
+                if (q.correct && q.cost > costThreshold) return 'quz-title-timeout'
+                return 'quz-title-correct';
+            } )(q)%> noselect"
                  onclick="hideContent(<%= q.questionId %>)">
                 <span><%= cleanTitle(q.source) %></span>
                 <% for (let point of q.keypoints) { %>
@@ -326,7 +340,12 @@
                         if (note != null && note != '') return 'inline';
                         else return 'none';
                     })(q.note)%>" id="quz-tag-note-<%= q.questionId %>">笔记</span>
-                    <span class="quz-tag"> 耗时<%- q.cost %>秒</span>
+                    <span class="quz-tag">
+                        <%= ((cost) => {
+                            if (cost) return `耗时${cost}秒`;
+                            return `未完成`
+                        })(q.cost)%>
+                    </span>
                     <span class="quz-tag-<%=((r) => {
                         if (r > 80) return 1;
                         if (r > 60) return 2;

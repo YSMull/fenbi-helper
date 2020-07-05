@@ -20,7 +20,7 @@ render(app, {
 
 router.get('/exercise/:exerciseId', async ctx => {
     let exerciseId = ctx.params.exerciseId;
-    let costThreshold = Number.parseInt(ctx.query.cost || 65);
+    let costThreshold = Number.parseInt(ctx.query.cost || 70);
     await ctx.render('exerciseResult', await exerciseResult.getResultObj(exerciseId, costThreshold));
 });
 
