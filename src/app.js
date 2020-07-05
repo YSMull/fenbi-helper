@@ -51,4 +51,12 @@ router.all('/', async ctx => {
 
 app.use(router.routes()).use(router.allowedMethods())
 
+app.use(async(ctx, next) => {
+    if (ctx.status === 404) {
+        ctx.redirect('/history');
+    } else {
+        next();
+    }
+});
+
 app.listen(3000);
