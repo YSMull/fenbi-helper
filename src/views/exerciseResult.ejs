@@ -37,6 +37,17 @@
             font-size: .875rem;
         }
 
+        .quz-tag-note {
+            font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
+            background: rgb(38, 16, 233);
+            border-radius: 4px;
+            border: solid 1px #dedede;
+            color: #fff;
+            padding: 0 8px;
+            margin-left: 8px;
+            font-size: .875rem;
+        }
+
         .quz-tag-correct {
             font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
             background: #f1f8ff;
@@ -246,12 +257,27 @@
             margin-left: 8px;
             font-size: .875rem;
         }
+
+        .my-note {
+            border: 1px solid #0096882e;
+            border-radius: 15px;
+            padding: 10px 0 10px 15px;
+            background-color: #8bc34a24;
+        }
+
+        .returnHistory {
+            cursor: pointer;
+            text-decoration: none;
+            position: absolute;
+        }
     </style>
+    <script src="http://html2canvas.hertzen.com/dist/html2canvas.min.js" async></script>
     <title>题目列表</title>
 </head>
 <body style="background: #f5f7fa;">
 
 <div style="margin: 20px auto 0; width: 1024px;">
+    <a href="/history" class="returnHistory">返回练习列表</a>
     <h2 style="text-align: center"><%=exercise.sheet.name%></h2>
     <div style="text-align: center">
         <span><%=moment(exercise.updatedTime).format('YYYY 年 MM 月 DD 日 HH:mm')%></span>
@@ -296,6 +322,10 @@
                         if (hasCollect) return 'inline';
                         else return 'none';
                     })(q.hasCollect)%>" id="quz-tag-collect-<%= q.questionId %>">收藏</span>
+                    <span class="quz-tag-note" style="display: <%=((note) => {
+                        if (note != null && note != '') return 'inline';
+                        else return 'none';
+                    })(q.note)%>" id="quz-tag-note-<%= q.questionId %>">笔记</span>
                     <span class="quz-tag"> 耗时<%- q.cost %>秒</span>
                     <span class="quz-tag-<%=((r) => {
                         if (r > 80) return 1;
@@ -311,8 +341,8 @@
                 <span class="quz-idx"> <%- q.idx + 1 %>.</span>
                 <div class="quz-content"> <%- q.content %></div>
                 <div class="quz-options">
-                    <% for (let opt of q.options) { %>
-                        <li style="list-style: upper-alpha"><%= opt %></li>
+                    <% for (let i = 0; i < q.options.length; i++) { %>
+                        <div><%= ['A', 'B', 'C', 'D'][i] + '. ' + q.options[i] %></div>
                     <% } %>
                 </div>
             </div>
@@ -331,9 +361,20 @@
                href="javascript:collect(<%= q.questionId %>);">
                 <% if (q.hasCollect) { %>取消收藏<% } else { %>收藏<% } %>
             </a>
+            <a class="solution-btn" id="copy-<%= q.questionId %>"
+               href="javascript:copyContent(<%= q.questionId %>);">
+                复制
+            </a>
         </div>
         <video class="video-solution" id="video-<%= q.questionId %>" width="400" style="display: none; margin: -10px 0 20px 0;" controls></video>
         <div class="quz-other-fold" id="ans-<%= q.questionId %>" style="padding: 0 30px;display:none">
+            <% if (q.note) { %>
+            <div class="my-note">
+                <strong>笔记:</strong>
+                <div><%= q.note %></div>
+            </div>
+
+            <% } %>
             <%- q.solution %>
         </div>
     <% } %>
@@ -403,6 +444,20 @@
         }
     }
 
+    function copyContent(questionId) {
+        let str = document.getElementById(questionId).innerHTML;
+
+        function listener(e) {
+            e.clipboardData.setData("text/html", str);
+            e.clipboardData.setData("text/plain", str);
+            e.preventDefault();
+        }
+
+        document.addEventListener("copy", listener);
+        document.execCommand("copy");
+        document.removeEventListener("copy", listener);
+    }
+
     function hideContent(questionId, fold) {
         let unExpand = () => {
             document.getElementById(`quz-content-${questionId}`).style.display = "none";
@@ -415,6 +470,7 @@
             document.getElementById(`show-video-${questionId}`).innerHTML = "视频解析";
 
             document.getElementById(`collect-${questionId}`).style.display = "none";
+            document.getElementById(`copy-${questionId}`).style.display = "none";
 
             let videos = document.getElementsByClassName('video-solution');
             for (let video of videos) {
@@ -428,6 +484,7 @@
             document.getElementById(`show-ans-${questionId}`).style.display = "inline";
             document.getElementById(`show-video-${questionId}`).style.display = "inline";
             document.getElementById(`collect-${questionId}`).style.display = "inline";
+            document.getElementById(`copy-${questionId}`).style.display = "inline";
         }
         if (fold != null && fold === true) {
             expand();
@@ -457,6 +514,7 @@
         });
         fold = !fold;
     }
+    foldAll(<%= concernQuestions.map(i => i.questionId) %>)
     <%
     // 这个函数定义在 ejs 里面
     function cleanTitle(title) {

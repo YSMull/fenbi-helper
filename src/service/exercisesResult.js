@@ -204,6 +204,10 @@ exports.getResultObj = async function (exerciseId, costThreshold) {
 
         q.correctRatio = solutionObj.questionMeta.correctRatio;
 
+        if (solutionObj.note) {
+            q.note = solutionObj.note.content;
+        }
+
         // q.userAnswer = solutionObj.userAnswer;
     });
     return {
