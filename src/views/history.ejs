@@ -46,6 +46,9 @@
 <body style="background: #f5f7fa;">
 
 <div style="margin: 20px auto 0; width: 700px;">
+    <% if (exerciseHistory.length == 0) {%>
+        <script>window.location = '/setup' </script>
+    <% } %>
     <% for (let history of exerciseHistory) { %>
         <div class="his-item" onclick="showReport(<%= history.id %>)" id="his-<%= history.id %>">
             <div class="his-title">

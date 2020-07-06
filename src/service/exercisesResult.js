@@ -95,7 +95,7 @@ async function getExerciseHistory(categoryId, cookie) {
             }
         });
     }));
-    return _.flatMap(hisArr, his => his.datas);
+    return _.flatMap(hisArr.filter(a => a), his => his.datas);
 }
 
 async function getSolutionsByIds(questionIds, cookie) {

@@ -9,18 +9,24 @@
 
 <div style="margin: 20px auto 0; width: 700px;">
     粉笔网手机号:<br>
-    <input id="phone" type="text" name="phone">
-    <br>
-    密码:<br>
-    <input id="password" type="password" name="password">
-    <br><br>
-    验证码:
-    <br>
-    <input id="authcode" type="text" name="captcha">
-    <img id="authimg" src="https://tiku.fenbi.com/api/verify/getCodeImage?phone=13026361420&tm=0.46846367506463404">
-    <br><br>
+    <form>
+        <input id="phone" type="text" name="phone">
+        <br>
+        密码:<br>
+        <input id="password" type="password" name="password">
+        <br><br>
 
-    <input id="login" type="submit" value="登录">
+        <div id="needauth" style="display: none">
+            验证码:
+            <br>
+            <input id="authcode" type="text" name="captcha">
+            <img id="authimg" src="https://tiku.fenbi.com/api/verify/getCodeImage?phone=13026361420&tm=0.46846367506463404">
+            <br><br>
+        </div>
+
+
+        <input id="login" type="submit" value="登录">
+    </form>
 </div>
 </body>
 <script>
@@ -49,7 +55,8 @@
         document.cookie = name + '=; Max-Age=-99999999;';
     }
 
-    document.getElementById("login").addEventListener('click' ,function () {
+    document.getElementById("login").addEventListener('click', function (event) {
+        event.preventDefault();
         fetch(`/api/login/`, {
             method: 'POST',
             headers: {
@@ -61,14 +68,23 @@
                 captcha: document.getElementById("authcode").value
             })
         }).then(response => {
+            debugger
             if (response.status === 200) {
                 return response.json();
             }
         }).then(cookies => {
-            cookies.forEach(cookie => {
-                let {name, value} = cookie;
-                setCookie(name, value, 90);
-            });
+            debugger
+            if (cookies.length > 1) {
+                cookies.forEach(cookie => {
+                    let {name, value} = cookie;
+                    setCookie(name, value, 90);
+                });
+                window.location = '/history';
+            } else {
+                alert('a')
+                document.getElementById('needauth').style.display = 'inline';
+            }
+
         })
     })
 </script>
