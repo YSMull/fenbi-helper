@@ -5,6 +5,8 @@ const koaBody = require('koa-body');
 const render = require('koa-ejs');
 
 const path = require('path');
+const qs = require('qs');
+const url = require('url');
 
 const app = new Koa();
 const router = new KoaRouter();
@@ -39,7 +41,13 @@ router.get('/exercise/:exerciseId', async ctx => {
     let exerciseId = ctx.params.exerciseId;
     let costThreshold = Number.parseInt(ctx.query.cost || 70);
     let cookie = ctx.request.headers['cookie']
-    await ctx.render('exerciseResult', await exerciseResult.getResultObj(exerciseId, costThreshold, cookie));
+    let renderObj = await exerciseResult.getResultObj(exerciseId, costThreshold, cookie);
+    if (renderObj) {
+        await ctx.render('exerciseResult', renderObj);
+    } else {
+        ctx.redirect('/setup?redirectPath=' + ctx.originalUrl);
+    }
+
 });
 
 router.get('/history', async ctx => {
@@ -63,9 +71,11 @@ router.post('/api/login',  koaBody(), async ctx => {
                 expires: new Date('2099-07-06'),
                 httpOnly: false
             });
+            let referer = ctx.request.headers.referer;
+            let redirectPath = qs.parse(url.parse(referer).query)['redirectPath'] || '/history';
             ctx.body = {
                 code: 200,
-                redirectPath: '/history'
+                redirectPath
             };
         });
     } else {

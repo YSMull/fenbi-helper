@@ -150,7 +150,7 @@ exports.getExerciseHistory = async function (cookie) {
 
 exports.getResultObj = async function (exerciseId, costThreshold, cookie) {
     let [exercise, report] = await Promise.all([getExercise(exerciseId, cookie), getExerciseReport(exerciseId, cookie)]);
-
+    if (!report || !exercise) return;
     let collectionIds = await getCollectsByIds(report.answers.map(answer => answer.questionId), cookie);
 
     let answerResultMap = {};
