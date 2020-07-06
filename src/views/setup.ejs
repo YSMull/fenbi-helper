@@ -1,0 +1,75 @@
+<html lang="zh">
+<head>
+    <style>
+
+    </style>
+</head>
+
+<body style="background: #f5f7fa;">
+
+<div style="margin: 20px auto 0; width: 700px;">
+    粉笔网手机号:<br>
+    <input id="phone" type="text" name="phone">
+    <br>
+    密码:<br>
+    <input id="password" type="password" name="password">
+    <br><br>
+    验证码:
+    <br>
+    <input id="authcode" type="text" name="captcha">
+    <img id="authimg" src="https://tiku.fenbi.com/api/verify/getCodeImage?phone=13026361420&tm=0.46846367506463404">
+    <br><br>
+
+    <input id="login" type="submit" value="登录">
+</div>
+</body>
+<script>
+    function setCookie(name, value, days) {
+        var expires = "";
+        if (days) {
+            var date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = name + "=" + (value || "") + expires + "; path=/";
+    }
+
+    function getCookie(name) {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+    }
+
+    function eraseCookie(name) {
+        document.cookie = name + '=; Max-Age=-99999999;';
+    }
+
+    document.getElementById("login").addEventListener('click' ,function () {
+        fetch(`/api/login/`, {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                phone: document.getElementById("phone").value,
+                password: document.getElementById("password").value,
+                captcha: document.getElementById("authcode").value
+            })
+        }).then(response => {
+            if (response.status === 200) {
+                return response.json();
+            }
+        }).then(cookies => {
+            cookies.forEach(cookie => {
+                let {name, value} = cookie;
+                setCookie(name, value, 90);
+            });
+        })
+    })
+</script>
+</html>

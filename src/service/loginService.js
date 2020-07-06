@@ -1,12 +1,15 @@
 const request = require('request');
 const setCookie = require('set-cookie-parser');
 
-let loginBody = 'phone=18565618629&password=n1%2BShg0XuAa%2BMsUP3pRH1upYz8vv29ZGvaBhs%2BPyIZufnM6j%2FaFPyxp1XTjh4OQpribA8e4kiGMeCfHr%2Fr%2FMQCQimCiSDvA2Bqm%2BOpuzudlJafZL7jF1A2UyWlIDUWjgUQRDuNzIYyq9lxEzcd4CbNMxQtfz%2BPAxag5MrWy5D4A%3D';
 
 /**
  * 返回的是 Cookie
  */
-exports.login = async function () {
+exports.login = async function (phone, password, captcha) {
+    let loginBody = `phone=${phone}&password=${password}`;
+    if (captcha != null && captcha !== '') {
+        loginBody += `&captcha=${captcha}`;
+    }
     return await new Promise(function (resolve, reject) {
         request({
             url: 'https://tiku.fenbi.com/api/users/loginV2',
@@ -18,9 +21,7 @@ exports.login = async function () {
             body: loginBody,
         }, function (err, httpResponse, body) {
             if (err) reject(err);
-            resolve(setCookie.parse(httpResponse.headers['set-cookie']).map(({name, value}) => {
-                return `${name}=${value}`;
-            }).join('; '));
+            resolve(setCookie.parse(httpResponse.headers['set-cookie']));
         });
     });
 }

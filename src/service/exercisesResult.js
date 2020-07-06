@@ -14,9 +14,6 @@ let headers = {
     "sec-fetch-user": "?1",
     "upgrade-insecure-requests": "1"
 };
-(async function () {
-    headers.cookie = await login();
-})();
 
 async function getQuestionByIds(questionIds) {
     let questions = await httpRequest({
@@ -49,73 +46,91 @@ async function getQuestionKeyPointsByIds(questionIds) {
 }
 
 // 返回收藏了的题目的id数组
-async function getCollectsByIds(questionIds) {
+async function getCollectsByIds(questionIds, cookie) {
     return await httpRequest({
         url: `https://tiku.fenbi.com/api/xingce/collects?ids=${questionIds.join(',')}`,
         method: "GET",
         json: true,
-        headers
+        headers: {
+            ...headers,
+            cookie
+        }
     });
 }
 
-function getExerciseReport(exerciseId) {
+function getExerciseReport(exerciseId, cookie) {
     return httpRequest({
         url: `https://tiku.fenbi.com/api/xingce/exercises/${exerciseId}/report/v2`,
         method: "GET",
         json: true,
-        headers
+        headers: {
+            ...headers,
+            cookie
+        }
     });
 }
 
-function getExercise(exerciseId) {
+function getExercise(exerciseId, cookie) {
     return httpRequest({
         url: `https://tiku.fenbi.com/api/xingce/exercises/${exerciseId}`,
         method: "GET",
         json: true,
-        headers
+        headers: {
+            ...headers,
+            cookie
+        }
     });
 }
 
-async function getExerciseHistory(categoryId) {
+async function getExerciseHistory(categoryId, cookie) {
     let cursorArr = [0, 30];
     let hisArr = await Promise.all(cursorArr.map(cursor => {
         return httpRequest({
             url: `https://tiku.fenbi.com/api/xingce/category-exercises?categoryId=${categoryId}&cursor=${cursor}&count=30`,
             method: "GET",
             json: true,
-            headers
+            headers: {
+                ...headers,
+                cookie
+            }
         });
     }));
     return _.flatMap(hisArr, his => his.datas);
 }
 
-async function getSolutionsByIds(questionIds) {
+async function getSolutionsByIds(questionIds, cookie) {
     let questions = await httpRequest({
         url: `https://tiku.fenbi.com/api/xingce/solutions?ids=${questionIds.join(',')}`,
         method: "GET",
         json: true,
-        headers
+        headers: {
+            ...headers,
+            cookie
+        }
     });
     return _.zipObject(questionIds, questions);
 }
 
-async function getVideoIdByIds(questionIds) {
+async function getVideoIdByIds(questionIds, cookie) {
     let result = await httpRequest({
         url: `https://ke.fenbi.com/api/gwy/v3/episodes/tiku_episodes_with_multi_type?tiku_ids=${questionIds.join(',')}&tiku_prefix=xingce&tiku_type=5`,
         method: "GET",
         json: true,
-        headers
+        headers: {
+            ...headers,
+            cookie
+        }
     });
     return result.data;
 }
 
-exports.getExerciseHistory = async function () {
+exports.getExerciseHistory = async function (cookie) {
     let result = await Promise.all([
-        getExerciseHistory(1),
-        getExerciseHistory(3)
+        getExerciseHistory(1, cookie),
+        getExerciseHistory(3, cookie)
     ]);
     let exerciseHistory = _.orderBy(_.flatMap(result, _.identity), ['updatedTime'], ['desc']);
-    let exerciseReportMap = _.zipObject(exerciseHistory.map(item => item.id), await Promise.all(exerciseHistory.map(item => getExerciseReport(item.id))));
+    let exerciseReportMap = _.zipObject(exerciseHistory.map(item => item.id), await Promise.all(exerciseHistory.map(item => getExerciseReport(item.id, cookie))));
     exerciseHistory.forEach(history => {
         history.finishedTime = moment(history.updatedTime).format('YYYY-MM-DD HH:mm:ss')
         let report = exerciseReportMap[history.id];
@@ -133,10 +148,10 @@ exports.getExerciseHistory = async function () {
     }
 }
 
-exports.getResultObj = async function (exerciseId, costThreshold) {
-    let [exercise, report] = await Promise.all([getExercise(exerciseId), getExerciseReport(exerciseId)]);
+exports.getResultObj = async function (exerciseId, costThreshold, cookie) {
+    let [exercise, report] = await Promise.all([getExercise(exerciseId, cookie), getExerciseReport(exerciseId, cookie)]);
 
-    let collectionIds = await getCollectsByIds(report.answers.map(answer => answer.questionId));
+    let collectionIds = await getCollectsByIds(report.answers.map(answer => answer.questionId), cookie);
 
     let answerResultMap = {};
 
@@ -161,7 +176,7 @@ exports.getResultObj = async function (exerciseId, costThreshold) {
     // let questionContentMap = await getQuestionByIds(concernQuestions.map(q => q.questionId));
     // let questionMetaMap = await getQuestionMetaByIds(concernQuestions.map(q => q.questionId));
     // let questionKeyPointsMap = await getQuestionKeyPointsByIds(concernQuestions.map(q => q.questionId));
-    let solutionMap = await getSolutionsByIds(concernQuestions.map(q => q.questionId));
+    let solutionMap = await getSolutionsByIds(concernQuestions.map(q => q.questionId), cookie);
 
     concernQuestions = _.orderBy(concernQuestions, ['correct', 'cost', 'idx'], ['asc', 'desc', 'asc']);
 
@@ -215,31 +230,39 @@ exports.getResultObj = async function (exerciseId, costThreshold) {
     }
 }
 
-exports.addCollect = async function (questionId) {
+exports.addCollect = async function (questionId, cookie) {
     return await httpRequest({
         url: `https://tiku.fenbi.com/api/xingce/collects/${questionId}`,
         method: "POST",
-        headers,
+        headers: {
+            ...headers,
+            cookie
+        },
         body: null
     });
 }
 
-exports.delCollect = async function (questionId) {
+exports.delCollect = async function (questionId, cookie) {
     await httpRequest({
         url: `https://tiku.fenbi.com/api/xingce/collects/${questionId}`,
         method: "DELETE",
-        headers
+        headers: {
+            ...headers,
+            cookie
+        }
     });
 }
 
-exports.getVideoUrl = async function (questionId) {
-
+exports.getVideoUrl = async function (questionId, cookie) {
     let videoMap = await getVideoIdByIds([questionId]);
     if (videoMap[questionId]) {
         let videoResult = await httpRequest({
             url: `https://ke.fenbi.com/api/gwy/v3/episodes/${videoMap[questionId][0].id}/mediafile/meta`,
             method: "GET",
-            headers,
+            headers: {
+                ...headers,
+                cookie
+            },
             json: true
         });
         if (videoResult && videoResult.datas && videoResult.datas.length > 0) {
