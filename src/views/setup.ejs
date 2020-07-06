@@ -1,32 +1,106 @@
 <html lang="zh">
 <head>
     <style>
+        .form-input {
+            box-sizing: border-box;
+            font-size: 14px;
+            font-variant: tabular-nums;
+            line-height: 1.5;
+            list-style: none;
+            -webkit-font-feature-settings: "tnum";
+            font-feature-settings: "tnum", "tnum";
+            position: relative;
+            display: inline-block;
+            width: 100%;
+            text-align: start;
+            -webkit-font-feature-settings: "tnum";
+            font-feature-settings: "tnum", "tnum";
+            height: 32px;
+            padding: 4px 11px;
+            color: rgba(0, 0, 0, 0.36);
+            background-color: #fff;
+            background-image: none;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            -webkit-transition: all .3s;
+            transition: all .3s;
+            margin: 0 0 24px;
+        }
 
+        .form-input:hover {
+            border-color: #40a9ff;
+            border-right-width: 1px !important;
+        }
+
+        .login-form {
+            width: 300px;
+            position: absolute;
+            top: 45%;
+            left: 50%;
+            -webkit-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+        }
+
+        .login-button {
+            color: #fff;
+            background-color: #1890ff;
+            border-color: #1890ff;
+            text-shadow: 0 -1px 0 rgba(0, 0, 0, .12);
+            box-shadow: 0 2px 0 rgba(0, 0, 0, .045);
+            line-height: 1.499;
+            position: relative;
+            display: inline-block;
+            font-weight: 400;
+            white-space: nowrap;
+            text-align: center;
+            background-image: none;
+            cursor: pointer;
+            -webkit-transition: all .3s cubic-bezier(.645, .045, .355, 1);
+            transition: all .3s cubic-bezier(.645, .045, .355, 1);
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            touch-action: manipulation;
+            height: 32px;
+            padding: 0 15px;
+            font-size: 14px;
+            border-radius: 4px;
+            width: 100%;
+        }
+
+        button {
+            /*消除button的默认样式*/
+            /*这种写法是对所有的button标签同时生效*/
+            margin: 0px;
+            padding: 0px;
+            /*自定义边框*/
+            border: 0px;
+            /*消除默认点击蓝色边框效果*/
+            outline: none;
+        }
+
+        .login-button:hover {
+            color: #fff;
+            background-color: #40a9ff;
+            border-color: #40a9ff;
+            width: 100%;
+        }
     </style>
     <script src="https://nodestatic.fbstatic.cn/weblts_spa_online/page/assets/files/encrypt.js"></script>
 </head>
 
 <body style="background: #f5f7fa;">
 
-<div style="margin: 20px auto 0; width: 700px;">
-    粉笔网手机号:<br>
-    <form>
-        <input id="phone" type="text" name="phone">
-        <br>
-        密码:<br>
-        <input id="password" type="password" name="password">
-        <br><br>
-
-        <div id="needauth" style="display: none">
-            验证码:
-            <br>
-            <input id="authcode" type="text" name="captcha">
-            <img id="authimg" src="https://tiku.fenbi.com/api/verify/getCodeImage?phone=13026361420&tm=0.46846367506463404">
-            <br><br>
+<div>
+    <form class="login-form">
+        <input class="form-input" id="phone" type="text" placeholder="粉笔网手机号">
+        <input class="form-input" id="password" type="password" placeholder="请输入密码">
+        <div id="needauth" style="display: none;">
+            <img id="authimg" style="position: absolute;margin-left: 10px;width: 92px;left: 298px;">
+            <input class="form-input" id="authcode" type="text" name="captcha" placeholder="验证码">
         </div>
-
-
-        <input id="login" type="submit" value="登录">
+        <button id="login" type="submit" class="login-button">登录</button>
     </form>
 </div>
 </body>
@@ -58,7 +132,6 @@
 
     document.getElementById("login").addEventListener('click', function (event) {
         event.preventDefault();
-        debugger
         let password = document.getElementById("password").value;
         let publicKey = 'ANKi9PWuvDOsagwIVvrPx77mXNV0APmjySsYjB1/GtUTY6cyKNRl2RCTt608m9nYk5VeCG2EAZRQmQNQTyfZkw0Uo+MytAkjj17BXOpY4o6+BToi7rRKfTGl6J60/XBZcGSzN1XVZ80ElSjaGE8Ocg8wbPN18tbmsy761zN5SuIl';
 
@@ -73,23 +146,16 @@
                 captcha: document.getElementById("authcode").value
             })
         }).then(response => {
-            debugger
             if (response.status === 200) {
                 return response.json();
             }
-        }).then(cookies => {
-            debugger
-            if (cookies.length > 1) {
-                cookies.forEach(cookie => {
-                    let {name, value} = cookie;
-                    setCookie(name, value, 90);
-                });
-                window.location = '/history';
-            } else {
-                alert('a')
+        }).then(result => {
+            if (result.code !== 200) {
                 document.getElementById('needauth').style.display = 'inline';
+                document.getElementById('authimg').src = `https://tiku.fenbi.com/api/verify/getCodeImage?phone=${document.getElementById("phone").value}&tm=0.46846367506463404`
+            } else {
+                window.location = result.redirectPath;
             }
-
         })
     })
 </script>

@@ -40,12 +40,33 @@
             font-size: 16px;
             float: right;
         }
+
+        .switchAccount {
+            text-decoration: none;
+            color: #494a4a;
+            cursor: pointer;
+            font-size: 18px;
+            border: 1px solid #00000059;
+            border-radius: 4px;
+            padding: 2px;
+            background-color: #fff;
+            -webkit-transition: all .3s;
+            -moz-transition: all .3s;
+            -o-transition: all .3s;
+            transition: all .3s;
+        }
+        .switchAccount:hover {
+            background-color: #e5e5e5;
+        }
     </style>
 </head>
 
 <body style="background: #f5f7fa;">
 
 <div style="margin: 20px auto 0; width: 700px;">
+    <div style="margin-bottom: 10px;">
+        <a href="/setup" class="switchAccount">切换账号</a>
+    </div>
     <% if (exerciseHistory.length == 0) {%>
         <script>window.location = '/setup' </script>
     <% } %>

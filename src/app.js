@@ -53,8 +53,26 @@ router.get('/setup', async ctx => {
 
 router.post('/api/login',  koaBody(), async ctx => {
     let {phone, password, captcha} = ctx.request.body;
-    let cookie = await loginService.login(phone, password, captcha);
-    ctx.body = cookie;
+    let cookies = await loginService.login(phone, password, captcha);
+    if (cookies.length > 1) {
+        cookies.forEach(cookie => {
+            let {name, value} = cookie;
+            ctx.cookies.set(name, value, {
+                path: '/',   //cookie写入的路径
+                maxAge: 0,
+                expires: new Date('2099-07-06'),
+                httpOnly: false
+            });
+            ctx.body = {
+                code: 200,
+                redirectPath: '/history'
+            };
+        });
+    } else {
+        ctx.body = {
+            code: 500
+        };
+    }
 });
 
 router.post('/api/collect/:questionId', async ctx => {
