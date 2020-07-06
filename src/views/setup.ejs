@@ -3,6 +3,7 @@
     <style>
 
     </style>
+    <script src="https://nodestatic.fbstatic.cn/weblts_spa_online/page/assets/files/encrypt.js"></script>
 </head>
 
 <body style="background: #f5f7fa;">
@@ -57,6 +58,10 @@
 
     document.getElementById("login").addEventListener('click', function (event) {
         event.preventDefault();
+        debugger
+        let password = document.getElementById("password").value;
+        let publicKey = 'ANKi9PWuvDOsagwIVvrPx77mXNV0APmjySsYjB1/GtUTY6cyKNRl2RCTt608m9nYk5VeCG2EAZRQmQNQTyfZkw0Uo+MytAkjj17BXOpY4o6+BToi7rRKfTGl6J60/XBZcGSzN1XVZ80ElSjaGE8Ocg8wbPN18tbmsy761zN5SuIl';
+
         fetch(`/api/login/`, {
             method: 'POST',
             headers: {
@@ -64,7 +69,7 @@
             },
             body: JSON.stringify({
                 phone: document.getElementById("phone").value,
-                password: document.getElementById("password").value,
+                password: window.encrypt(publicKey, password),
                 captcha: document.getElementById("authcode").value
             })
         }).then(response => {
