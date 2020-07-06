@@ -1,5 +1,7 @@
 const request = require('request')
 
+const ERR_CODE = 666;
+
 exports.httpRequest = async function (params) {
     try {
         return await new Promise(function (resolve, reject) {
@@ -11,7 +13,7 @@ exports.httpRequest = async function (params) {
     } catch (error) {
         if (error.code === 'ETIMEDOUT') {
             throw {
-                code: ERR_CODE,
+                code: 'ERR_CODE',
                 message: `请求${params.url}服务超时`,
                 value: JSON.stringify(error),
             };
