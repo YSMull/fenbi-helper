@@ -101,9 +101,15 @@ router.del('/api/collect/:questionId', async ctx => {
 
 router.get('/api/video/:questionId', async ctx => {
     let questionId = ctx.params.questionId;
-    let cookie = ctx.request.headers['cookie']
+    let cookie = ctx.request.headers['cookie'];
     ctx.body = await exerciseResult.getVideoUrl(questionId, cookie);
 })
+
+router.get('/api/comment/:questionId', async ctx => {
+    let questionId = ctx.params.questionId;
+    let cookie = ctx.request.headers['cookie'];
+    ctx.body = await exerciseResult.getComments(questionId, cookie);
+});
 
 router.all('/', async ctx => {
     ctx.redirect('/history');

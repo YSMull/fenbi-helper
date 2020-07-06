@@ -111,7 +111,7 @@ async function getSolutionsByIds(questionIds, cookie) {
     return _.zipObject(questionIds, questions);
 }
 
-async function getVideoIdByIds(questionIds, cookie) {
+async function getEpisodesByIds(questionIds, cookie) {
     let result = await httpRequest({
         url: `https://ke.fenbi.com/api/gwy/v3/episodes/tiku_episodes_with_multi_type?tiku_ids=${questionIds.join(',')}&tiku_prefix=xingce&tiku_type=5`,
         method: "GET",
@@ -150,7 +150,7 @@ exports.getExerciseHistory = async function (cookie) {
 
 exports.getResultObj = async function (exerciseId, costThreshold, cookie) {
     let [exercise, report] = await Promise.all([getExercise(exerciseId, cookie), getExerciseReport(exerciseId, cookie)]);
-    if (!report || !exercise) return;
+    if (!report || !report.answers || !exercise) return;
     let collectionIds = await getCollectsByIds(report.answers.map(answer => answer.questionId), cookie);
 
     let answerResultMap = {};
@@ -254,10 +254,10 @@ exports.delCollect = async function (questionId, cookie) {
 }
 
 exports.getVideoUrl = async function (questionId, cookie) {
-    let videoMap = await getVideoIdByIds([questionId]);
-    if (videoMap[questionId]) {
+    let episodeMap = await getEpisodesByIds([questionId]);
+    if (episodeMap[questionId]) {
         let videoResult = await httpRequest({
-            url: `https://ke.fenbi.com/api/gwy/v3/episodes/${videoMap[questionId][0].id}/mediafile/meta`,
+            url: `https://ke.fenbi.com/api/gwy/v3/episodes/${episodeMap[questionId][0].id}/mediafile/meta`,
             method: "GET",
             headers: {
                 ...headers,
@@ -273,4 +273,18 @@ exports.getVideoUrl = async function (questionId, cookie) {
     } else {
         return null;
     }
+}
+
+exports.getComments = async function (questionId, cookie) {
+    let episodeMap = await getEpisodesByIds([questionId]);
+    let commentResult = await httpRequest({
+        url: `https://ke.fenbi.com/ipad/gwy/v3/comments/episodes/${episodeMap[questionId][0].id}?system=12.4.7&inhouse=0&app=gwy&ua=iPad&av=44&version=6.11.3&kav=22&kav=1&len=10&start=0`,
+        method: "GET",
+        headers: {
+            ...headers,
+            cookie
+        },
+        json: true
+    });
+    return commentResult;
 }

@@ -361,7 +361,7 @@
                 <div class="quz-content"> <%- q.content %></div>
                 <div class="quz-options">
                     <% for (let i = 0; i < q.options.length; i++) { %>
-                        <div><%= ['A', 'B', 'C', 'D'][i] + '. ' + q.options[i] %></div>
+                        <div><%= ['A', 'B', 'C', 'D'][i] + '. ' %> <%- q.options[i] %></div>
                     <% } %>
                 </div>
             </div>
@@ -371,6 +371,10 @@
             <a class="solution-btn" id="show-ans-<%= q.questionId %>"
                href="javascript:showSolution(<%= q.questionId %>);">
                 查看解析
+            </a>
+            <a class="solution-btn" id="show-comment-<%= q.questionId %>"
+               href="javascript:showComment(<%= q.questionId %>);">
+                查看评论
             </a>
             <a class="solution-btn" id="show-video-<%= q.questionId %>"
                href="javascript:showVideoSolution(<%= q.questionId %>);">
@@ -386,6 +390,7 @@
             </a>
         </div>
         <video class="video-solution" id="video-<%= q.questionId %>" width="400" style="display: none; margin: -10px 0 20px 0;" controls></video>
+        <div id="comment-<%= q.questionId %>" style="display: none;"></div>
         <div class="quz-other-fold" id="ans-<%= q.questionId %>" style="padding: 0 30px;display:none">
             <% if (q.note) { %>
             <div class="my-note">
@@ -408,6 +413,36 @@
         } else {
             document.getElementById(`ans-${questionId}`).style.display = "none";
             document.getElementById(`show-ans-${questionId}`).innerHTML = "查看解析";
+        }
+    }
+
+    function showComment(questionId) {
+        let comment = document.getElementById(`comment-${questionId}`);
+        let dis = comment.style.display;
+        if (dis === 'none') {
+            if (comment.innerHTML) {
+                comment.style.display = 'inline';
+                return;
+            }
+            fetch(`/api/comment/${questionId}`, {
+                method: 'GET'
+            }).then(response => {
+                if (response.status === 200) {
+                    document.getElementById(`show-comment-${questionId}`).innerHTML = "收起评论";
+                    return response.json();
+                }
+            }).then(({total, datas}) => {
+                for (let {comment: c, createdTime, fiveGradeScore, likeCount} of datas) {
+                    if (c.length < 10) continue;
+                    let li = document.createElement('li');
+                    li.innerText = c + `(${likeCount})`;
+                    comment.appendChild(li);
+                }
+                comment.style.display = 'inline';
+            });
+        } else {
+            document.getElementById(`show-comment-${questionId}`).innerHTML = "查看评论";
+            document.getElementById(`comment-${questionId}`).style.display = "none";
         }
     }
 
@@ -485,22 +520,24 @@
             document.getElementById(`show-ans-${questionId}`).style.display = "none";
             document.getElementById(`show-ans-${questionId}`).innerHTML = "查看解析";
 
+            document.getElementById(`show-comment-${questionId}`).style.display = "none";
+            document.getElementById(`show-comment-${questionId}`).innerHTML = "查看评论";
+
             document.getElementById(`show-video-${questionId}`).style.display = "none";
             document.getElementById(`show-video-${questionId}`).innerHTML = "视频解析";
 
             document.getElementById(`collect-${questionId}`).style.display = "none";
             document.getElementById(`copy-${questionId}`).style.display = "none";
 
-            let videos = document.getElementsByClassName('video-solution');
-            for (let video of videos) {
-                video.pause();
-                video.style.display = 'none';
-            }
+            let video = document.getElementById(`video-${questionId}`);
+            video.pause();
+            video.style.display = 'none';
         };
 
         let expand = () => {
             document.getElementById(`quz-content-${questionId}`).style.display = "block";
             document.getElementById(`show-ans-${questionId}`).style.display = "inline";
+            document.getElementById(`show-comment-${questionId}`).style.display = "inline";
             document.getElementById(`show-video-${questionId}`).style.display = "inline";
             document.getElementById(`collect-${questionId}`).style.display = "inline";
             document.getElementById(`copy-${questionId}`).style.display = "inline";
