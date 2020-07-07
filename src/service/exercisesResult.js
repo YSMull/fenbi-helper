@@ -169,7 +169,8 @@ exports.getResultObj = async function (exerciseId, costThreshold, cookie) {
             idx: (ua && ua.questionIndex) || report.answers.findIndex(item => item.questionId == questionId) + 1,
             questionId,
             correct,
-            cost: ua && ua.time
+            cost: ua && ua.time,
+            myAnswer: (ua && ua.answer && ['A','B','C','D'][ua.answer.choice]) || '未选择'
         }
     }).filter(a => a);
 
@@ -215,11 +216,11 @@ exports.getResultObj = async function (exerciseId, costThreshold, cookie) {
 
         q.correctRatio = solutionObj.questionMeta.correctRatio;
 
+        q.totalCount = solutionObj.questionMeta.totalCount;
+
         if (solutionObj.note) {
             q.note = solutionObj.note.content;
         }
-
-        // q.userAnswer = solutionObj.userAnswer;
     });
     return {
         moment,
@@ -276,15 +277,23 @@ exports.getVideoUrl = async function (questionId, cookie) {
 }
 
 exports.getComments = async function (questionId, cookie) {
-    let episodeMap = await getEpisodesByIds([questionId]);
-    let commentResult = await httpRequest({
-        url: `https://ke.fenbi.com/ipad/gwy/v3/comments/episodes/${episodeMap[questionId][0].id}?system=12.4.7&inhouse=0&app=gwy&ua=iPad&av=44&version=6.11.3&kav=22&kav=1&len=10&start=0`,
-        method: "GET",
-        headers: {
-            ...headers,
-            cookie
-        },
-        json: true
-    });
-    return commentResult;
+    try {
+        let episodeMap = await getEpisodesByIds([questionId]);
+        let cursorArr = [0, 30];
+        let commentResultArr = await Promise.all(cursorArr.map(cursor => {
+            return httpRequest({
+                url: `https://ke.fenbi.com/ipad/gwy/v3/comments/episodes/${episodeMap[questionId][0].id}?system=12.4.7&inhouse=0&app=gwy&ua=iPad&av=44&version=6.11.3&kav=22&kav=1&len=30&start=${cursor}`,
+                method: "GET",
+                json: true,
+                headers: {
+                    ...headers,
+                    cookie
+                }
+            });
+        }));
+        let datas = _.flatMap(commentResultArr.filter(a => a), r => r.datas);
+        return _.orderBy(datas.filter(i => i.likeCount > 1), ['likeCount'], ['desc']).slice(0, 10);
+    } catch (e) {
+        return [];
+    }
 }

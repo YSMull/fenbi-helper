@@ -354,6 +354,7 @@
                         return 5;
                     })(q.correctRatio)%>"> 正确率<%- q.correctRatio.toFixed(2)+ '%' %>
                     </span>
+                    <span class="quz-tag"><%= q.totalCount %></span>
                 </span>
             </div>
             <div class="quz-content-fold" id="quz-content-<%= q.questionId %>">
@@ -390,15 +391,17 @@
             </a>
         </div>
         <video class="video-solution" id="video-<%= q.questionId %>" width="400" style="display: none; margin: -10px 0 20px 0;" controls></video>
-        <div id="comment-<%= q.questionId %>" style="display: none;"></div>
+        <div id="comment-<%= q.questionId %>" style="display: none;list-style: none;margin-bottom: 15px;"></div>
         <div class="quz-other-fold" id="ans-<%= q.questionId %>" style="padding: 0 30px;display:none">
             <% if (q.note) { %>
             <div class="my-note">
                 <strong>笔记:</strong>
                 <div><%= q.note %></div>
             </div>
-
             <% } %>
+            <div>
+                我的选择: <%= q.myAnswer %>
+            </div>
             <%- q.solution %>
         </div>
     <% } %>
@@ -431,14 +434,14 @@
                     document.getElementById(`show-comment-${questionId}`).innerHTML = "收起评论";
                     return response.json();
                 }
-            }).then(({total, datas}) => {
+            }).then((datas) => {
                 for (let {comment: c, createdTime, fiveGradeScore, likeCount} of datas) {
-                    if (c.length < 10) continue;
                     let li = document.createElement('li');
                     li.innerText = c + `(${likeCount})`;
+                    li.style = 'margin-bottom: 10px;border: 1px solid #90909096;padding: 10px;';
                     comment.appendChild(li);
                 }
-                comment.style.display = 'inline';
+                comment.style.display = 'block';
             });
         } else {
             document.getElementById(`show-comment-${questionId}`).innerHTML = "查看评论";
@@ -515,23 +518,28 @@
     function hideContent(questionId, fold) {
         let unExpand = () => {
             document.getElementById(`quz-content-${questionId}`).style.display = "none";
-            document.getElementById(`ans-${questionId}`).style.display = "none";
 
+
+            // 关闭解析
             document.getElementById(`show-ans-${questionId}`).style.display = "none";
             document.getElementById(`show-ans-${questionId}`).innerHTML = "查看解析";
+            document.getElementById(`ans-${questionId}`).style.display = "none";
 
+            // 关闭评论
             document.getElementById(`show-comment-${questionId}`).style.display = "none";
             document.getElementById(`show-comment-${questionId}`).innerHTML = "查看评论";
+            document.getElementById(`comment-${questionId}`).style.display = "none";
 
+
+            // 关闭视频
             document.getElementById(`show-video-${questionId}`).style.display = "none";
             document.getElementById(`show-video-${questionId}`).innerHTML = "视频解析";
-
-            document.getElementById(`collect-${questionId}`).style.display = "none";
-            document.getElementById(`copy-${questionId}`).style.display = "none";
-
             let video = document.getElementById(`video-${questionId}`);
             video.pause();
             video.style.display = 'none';
+
+            document.getElementById(`collect-${questionId}`).style.display = "none";
+            document.getElementById(`copy-${questionId}`).style.display = "none";
         };
 
         let expand = () => {
