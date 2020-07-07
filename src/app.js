@@ -8,6 +8,8 @@ const path = require('path');
 const qs = require('qs');
 const url = require('url');
 
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
 const app = new Koa();
 const router = new KoaRouter();
 
@@ -50,6 +52,17 @@ router.get('/exercise/:exerciseId', async ctx => {
 
 });
 
+router.get('/search', async ctx => {
+    await ctx.render('search');
+});
+
+router.post('/api/search', koaBody(), async ctx => {
+    let cookie = ctx.request.headers['cookie']
+    let {text} = ctx.request.body;
+    ctx.body = await exerciseResult.search(text, cookie);
+});
+
+
 router.get('/history', async ctx => {
     let cookie = ctx.request.headers['cookie']
     await ctx.render('history', await exerciseResult.getExerciseHistory(cookie));
@@ -59,7 +72,7 @@ router.get('/setup', async ctx => {
     await ctx.render('setup', {});
 });
 
-router.post('/api/login',  koaBody(), async ctx => {
+router.post('/api/login', koaBody(), async ctx => {
     let {phone, password, captcha} = ctx.request.body;
     let cookies = await loginService.login(phone, password, captcha);
     if (cookies.length > 1) {

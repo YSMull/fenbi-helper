@@ -1,0 +1,113 @@
+<html lang="zh">
+<head>
+    <style>
+        .his-item {
+            margin-bottom: 20px;
+            background-color: #ffffff;
+            line-height: 2rem;
+            -webkit-transition: all .3s;
+            -moz-transition: all .3s;
+            -o-transition: all .3s;
+            transition: all .3s;
+        }
+
+        .his-item:hover {
+            box-shadow: 0 1px 10px 0 #888888;
+            cursor: pointer;
+        }
+
+        .his-tag {
+            font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
+            background: #f1f8ff;
+            border-radius: 4px;
+            color: #3792fd;
+            padding: 0 8px;
+            margin-left: 8px;
+            font-size: .875rem;
+        }
+
+        .his-title {
+            font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
+            color: #2d2d2ddb;
+            padding: 0 8px;
+            font-size: .875rem;
+            background-image: linear-gradient(to right, #bdddff, #ffffff);
+        }
+
+        .his-time {
+            font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
+            font-size: 16px;
+            float: right;
+        }
+
+        .searchKeyword {
+            color: red;
+        }
+
+        .searchContentText {
+            padding: 10px;
+        }
+
+        #searchContent {
+            left: 40%;
+            position: absolute;
+        }
+        #searchBtn {
+            left: 52%;
+            position: absolute;
+        }
+    </style>
+</head>
+<div style="padding: 10px;">
+    <input id="searchContent" type="search"/>
+    <button id="searchBtn">搜索</button>
+</div>
+<body style="background: #f5f7fa;">
+
+
+<div id="searchResult"></div>
+</body>
+<script>
+    function showReport(exerciseId) {
+        window.location = '/exercise/' + exerciseId;
+    }
+    document.getElementById('searchBtn').addEventListener('click', event => {
+        fetch(`/api/search`, {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                text: document.getElementById("searchContent").value,
+            })
+        }).then(response => {
+            if (response.status === 200) {
+                return response.json();
+            }
+        }).then(datas => {
+            let r = document.getElementById('searchResult');
+            r.innerHTML = '';
+            for (let data of datas) {
+                let div = document.createElement('div');
+                div.style = 'margin: 20px auto 0; width: 700px;'
+                let item = document.createElement('div')
+                item.className='his-item';
+                div.appendChild(item);
+                let title = document.createElement('div')
+                title.className='his-title';
+                let s = '';
+                for (let source of data.sourceList) {
+                    s += `<li style="list-style: none;">${source}</li>`
+                }
+                title.innerHTML = s;
+                item.appendChild(title);
+                let content = document.createElement('div');
+                content.className = 'searchContentText'
+                content.innerHTML = data.stemSnippet_;
+                item.appendChild(content);
+                r.appendChild(div);
+            }
+        });
+    });
+</script>
+</html>

@@ -170,7 +170,7 @@ exports.getResultObj = async function (exerciseId, costThreshold, cookie) {
             questionId,
             correct,
             cost: ua && ua.time,
-            myAnswer: (ua && ua.answer && ['A','B','C','D'][ua.answer.choice]) || '未选择'
+            myAnswer: (ua && ua.answer && ['A', 'B', 'C', 'D'][ua.answer.choice]) || '未选择'
         }
     }).filter(a => a);
 
@@ -296,4 +296,52 @@ exports.getComments = async function (questionId, cookie) {
     } catch (e) {
         return [];
     }
+}
+
+function convertTree(root) {
+    let str = '';
+    for (let child of root.children) {
+        if (child.name === 'em') {
+            str += '<span class="searchKeyword">' + convertTree(child) + '</span>';
+        } else if (child.name === 'txt') {
+            str += child.value;
+        } else if (child.name === 'p') {
+            str += convertTree(child);
+        } else {
+            console.log('b')
+        }
+    }
+    return str;
+}
+
+exports.search = async function (text, cookie) {
+    let cursorArr = [0, 15];
+    let commentResultArr = await Promise.all(cursorArr.map(cursor => {
+        return httpRequest({
+            url: `https://60.205.108.139/ipad/search/v2?system=12.4.7&inhouse=0&app=gwy&ua=iPad&av=44&version=6.11.3&kav=22&coursePrefix=xingce&format=json&len=15&q=${encodeURIComponent(text)}&start=${cursor}`,
+            method: "GET",
+            json: true,
+            headers: {
+                ...headers,
+                'User-Agent': 'XC/6.11.3 (iPad; iOS 12.4.7; Scale/2.00)',
+                'Accept': '*/*',
+                'Host': 'tiku.fenbi.com',
+                cookie
+            }
+        });
+    }));
+    let datas = _.flatMap(commentResultArr.filter(a => a), r => _.get(r, 'data.items', []));
+
+    datas.forEach(item => {
+        let sourceList = item.source.split(',');
+        item.sourceList = sourceList.filter(s => {
+            let blockSourceList = ['礼包', '模考'];
+            return !blockSourceList.some(b => s.includes(b));
+        })
+    });
+    datas = datas.filter(item => item.sourceList.length !== 0);
+    datas.forEach(item => {
+        item.stemSnippet_ = convertTree(JSON.parse(item.stemSnippet));
+    });
+    return datas;
 }

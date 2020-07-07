@@ -28,7 +28,7 @@ exports.httpRequest = async function (params) {
         throw {
             code: ERR_CODE,
             message: `请求${params.url}服务出错`,
-            value: JSON.stringify(error),
+            value: error.message,
         };
     }
 };
