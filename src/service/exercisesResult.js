@@ -292,7 +292,9 @@ exports.getComments = async function (questionId, cookie) {
             });
         }));
         let datas = _.flatMap(commentResultArr.filter(a => a), r => r.datas);
-        return _.orderBy(datas.filter(i => i.likeCount > 1), ['likeCount'], ['desc']).slice(0, 10);
+        return _.orderBy(datas.filter(i => {
+            return i.likeCount > 1 && !['?', '？'].some(t => i.comment.includes(t)) && i.comment.length > 8
+        }), ['likeCount'], ['desc']).slice(0, 10);
     } catch (e) {
         return [];
     }

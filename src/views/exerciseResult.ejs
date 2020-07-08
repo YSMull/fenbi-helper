@@ -425,6 +425,7 @@
         if (dis === 'none') {
             if (comment.innerHTML) {
                 comment.style.display = 'inline';
+                document.getElementById(`show-comment-${questionId}`).innerHTML = "收起评论";
                 return;
             }
             fetch(`/api/comment/${questionId}`, {
