@@ -268,16 +268,29 @@
         }
 
         .my-note {
-            border: 1px solid #0096882e;
-            border-radius: 15px;
-            padding: 10px 0 10px 15px;
-            background-color: #8bc34a24;
+            padding: 10px 0 10px 0;
         }
 
         .returnHistory {
             cursor: pointer;
             text-decoration: none;
             position: absolute;
+        }
+
+        .note-area {
+            margin-top: 12px;
+            background-color: #e6efe3;
+            resize: none;
+            width: 658px;
+            height: 173px;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-y: auto;
+            font-size: 16px;
+            letter-spacing: -.38px;
+            line-height: 23px;
+            outline: 0;
+            border: solid 1px #9e9e9ea6;
         }
     </style>
     <script src="http://html2canvas.hertzen.com/dist/html2canvas.min.js" async></script>
@@ -396,7 +409,8 @@
             <% if (q.note) { %>
             <div class="my-note">
                 <strong>笔记:</strong>
-                <div><%= q.note %></div>
+                <br>
+                <textarea class="note-area"><%= q.note %></textarea>
             </div>
             <% } %>
             <div>
