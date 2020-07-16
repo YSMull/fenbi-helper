@@ -317,6 +317,10 @@
            href="https://www.fenbi.com/spa/tiku/report/exam/solution/xingce/xingce/<%= exercise.id %>/4">
             粉笔报告地址
         </a>
+        <a class="solution-btn" target="_blank"
+           href="https://tiku.fenbi.com/api/xingce/exercises/<%= exercise.id %>/pdf">
+            导出pdf
+        </a>
         <a id="expand-btn" class="solution-btn"
            href="javascript:foldAll(<%= concernQuestions.map(i => i.questionId) %>)">
             全部收起
