@@ -375,11 +375,18 @@
                 </span>
             </div>
             <div class="quz-content-fold" id="quz-content-<%= q.questionId %>">
+                <% if (q.material) { %>
+                    <div class="quz-content"> <%- q.material %></div>
+                <% } %>
                 <span class="quz-idx"> <%- q.idx + 1 %>.</span>
                 <div class="quz-content"> <%- q.content %></div>
                 <div class="quz-options">
                     <% for (let i = 0; i < q.options.length; i++) { %>
-                        <div><%= ['A', 'B', 'C', 'D'][i] + '. ' %> <%- q.options[i] %></div>
+                        <% if (q.options[i].startsWith('<p>')) { %>
+                            <div><%= ['A', 'B', 'C', 'D'][i] + '. ' %> <%- q.options[i].replace(/^<p>/g, '').replace(/<\/p>$/g, '') %></div>
+                        <% } else { %>
+                            <div><%= ['A', 'B', 'C', 'D'][i] + '. ' %> <%- q.options[i] %></div>
+                        <% }%>
                     <% } %>
                 </div>
             </div>
@@ -602,6 +609,7 @@
     // 这个函数定义在 ejs 里面
     function cleanTitle(title) {
         return title.replace(/辽宁\/湖南\/湖北\/安徽\/四川\/福建\/云南\/黑龙江\/江西\/广西\/贵州\/海南\/内蒙古\/山西\/重庆\/宁夏\/西藏/g, '湖北')
+                .replace(/山西\/辽宁\/黑龙江\/福建\/湖北\/ 湖南\/广西\/海南\/四川\/重庆\/ 云南\/ 西藏\/陕西\/青海\/宁夏\/ 新疆兵团/g, '湖北')
                 .replace(/（网友回忆版）/g, '')
                 .replace(/网友回忆版/g, '')
                 .replace(/第\d+题/g, '')

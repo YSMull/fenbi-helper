@@ -221,6 +221,10 @@ exports.getResultObj = async function (exerciseId, costThreshold, cookie) {
         if (solutionObj.note) {
             q.note = solutionObj.note.content;
         }
+
+        if (solutionObj.material) {
+            q.material = solutionObj.material.content;
+        }
     });
     return {
         moment,
