@@ -1,8 +1,8 @@
 const _ = require('lodash');
 const moment = require('moment');
+const percentile = require('percentile');
 
 const {httpRequest} = require('../util/httpUtil');
-const {login} = require('../service/loginService');
 
 let headers = {
     "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
@@ -226,12 +226,20 @@ exports.getResultObj = async function (exerciseId, costThreshold, cookie) {
             q.material = solutionObj.material.content;
         }
     });
+
+    let costArr = concernQuestions.map(a => ({idx: a.idx, cost: a.cost})).filter(a => a.cost);
+    // let mean = _.sum(costArr) / costArr.length;
+    // let var1 = Math.sqrt(_.sum(costArr.map(i => (i - mean) * (i - mean))) / costArr.length);
+    // let var2 = Math.sqrt(_.sum(costArr.map(i => (i - mean) * (i - mean))) / (costArr.length - 1));
+
     return {
         moment,
         exercise,
         costThreshold,
         concernSourceCount: Object.keys(concernSourceCountMap).map(key => ({key, count: concernSourceCountMap[key]})),
-        concernQuestions
+        concernQuestions,
+        costArr: _.orderBy(costArr, ['idx'], ['asc']),
+        percentile
     }
 }
 

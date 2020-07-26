@@ -15,8 +15,10 @@
     "koa-body": "^4.2.0",
     "koa-ejs": "^4.3.0",
     "koa-router": "^9.0.1",
+    "koa-static": "^5.0.0",
     "lodash": "^4.17.15",
     "moment": "^2.27.0",
+    "percentile": "^1.4.0",
     "qs": "^6.9.4",
     "request": "^2.88.2",
     "set-cookie-parser": "^2.4.6"

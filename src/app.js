@@ -3,6 +3,8 @@ const KoaRouter = require('koa-router');
 const koaBody = require('koa-body');
 
 const render = require('koa-ejs');
+const serve = require('koa-static');
+
 
 const path = require('path');
 const qs = require('qs');
@@ -23,6 +25,8 @@ render(app, {
     cache: false,
     debug: false,
 });
+
+app.use(serve('./views/js'))
 
 app.use(router.routes()).use(router.allowedMethods())
 

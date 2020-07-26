@@ -293,12 +293,13 @@
             border: solid 1px #9e9e9ea6;
         }
     </style>
-    <script src="http://html2canvas.hertzen.com/dist/html2canvas.min.js" async></script>
+    <script src="/echarts.min.js"></script>
     <title>题目列表</title>
 </head>
 <body style="background: #f5f7fa;">
 
 <div style="margin: 20px auto 0; width: 1024px;">
+    <input id="costArr" value="<%= JSON.stringify(costArr) %>" type="hidden" />
     <a href="/history" class="returnHistory">返回练习列表</a>
     <h2 style="text-align: center"><%=exercise.sheet.name%></h2>
     <div style="text-align: center">
@@ -333,6 +334,7 @@
         超时率<span class="cost-count"><%= (concernQuestions.filter(q => q.cost > costThreshold && q.correct).length / concernQuestions.length * 100).toFixed(1) + '%' %></span>
         <span class="comment">(耗时大于<%= costThreshold %>秒)</span>
     </p>
+    <div id="costChart" style="width: auto;height:400px;"></div>
     <% for (let q of concernQuestions) { %>
         <div class="quz-item" id="<%= q.questionId %>">
             <div class="<%= ((q) => {
@@ -616,6 +618,108 @@
                 .replace(/县级\+乡镇/g, '县级');
     }
     %>
+
+    let myChart = echarts.init(document.getElementById('costChart'));
+    let costDatas = JSON.parse(document.getElementById('costArr').value);
+    let sort = false;
+    // 指定图表的配置项和数据
+    let option = (datas) => ({
+        title: {
+            x:'center',
+            y:'top',
+            textAlign:'center',
+            text: '耗时分析'
+        },
+        tooltip: {
+            trigger: 'axis'
+        },
+        xAxis: {
+            data: datas.map(i => i.idx)
+        },
+        yAxis: {
+            splitLine: {
+                show: false
+            }
+        },
+        visualMap: {
+            orient:'horizontal',
+            left: 'center',
+            pieces: [{
+                gt: 0,
+                lte: 60,
+                color: '#096'
+            }, {
+                gt: 60,
+                lte: 80,
+                color: '#628de3'
+            }, {
+                gt: 80,
+                lte: 100,
+                color: '#f1b448'
+            }, {
+                gt: 100,
+                lte: 120,
+                color: '#fa6e6e'
+            }, {
+                gt: 120,
+                lte: 150,
+                color: '#ad0000'
+            }, {
+                gt: 150,
+                color: '#000000'
+            }],
+            outOfRange: {
+                color: '#999'
+            }
+        },
+        toolbox: {
+            right: 50,
+            show : true,
+            feature : {
+                myTool2:{//自定义按钮 danielinbiti,这里增加，selfbuttons可以随便取名字
+                    show:true,//是否显示
+                    title:'排序', //鼠标移动上去显示的文字
+                    icon: 'image://data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pg0KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPg0KPHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJDYXBhXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB2aWV3Qm94PSIwIDAgNTEyIDUxMiIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNTEyIDUxMjsiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPGc+DQoJPGc+DQoJCTxnPg0KCQkJPHJlY3QgeD0iMi4zNDQiIHk9IjQ4MCIgd2lkdGg9IjM4NCIgaGVpZ2h0PSIzMiIvPg0KCQkJPHJlY3QgeD0iMi4zNDQiIHk9IjM4NCIgd2lkdGg9IjMyMCIgaGVpZ2h0PSIzMiIvPg0KCQkJPHJlY3QgeD0iMi4zNDQiIHk9IjI4OCIgd2lkdGg9IjI1NiIgaGVpZ2h0PSIzMiIvPg0KCQkJPHJlY3QgeD0iMi4zNDQiIHk9IjE5MiIgd2lkdGg9IjE5MiIgaGVpZ2h0PSIzMiIvPg0KCQkJPHJlY3QgeD0iMi4zNDQiIHk9Ijk2IiB3aWR0aD0iMTI4IiBoZWlnaHQ9IjMyIi8+DQoJCQk8cmVjdCB4PSIyLjM0NCIgd2lkdGg9IjY0IiBoZWlnaHQ9IjMyIi8+DQoJCQk8cG9seWdvbiBwb2ludHM9IjQ4Ny4wMzIsNDI4LjY4OCA0NjYuMzQ0LDQ0OS4zNzYgNDY2LjM0NCwxMjggNDM0LjM0NCwxMjggNDM0LjM0NCw0NDkuMzc2IDQxMy42NTYsNDI4LjY4OCAzOTEuMDMyLDQ1MS4zMTIgDQoJCQkJNDUwLjM0NCw1MTAuNjI0IDUwOS42NTYsNDUxLjMxMiAJCQkiLz4NCgkJCTxyZWN0IHg9IjQzNC4zNDQiIHk9IjY0IiB3aWR0aD0iMzIiIGhlaWdodD0iMzIiLz4NCgkJCTxyZWN0IHg9IjQzNC4zNDQiIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIvPg0KCQk8L2c+DQoJPC9nPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPC9zdmc+DQo=',
+                    onclick:function() {
+                        sort = !sort;
+                        let d = JSON.parse(document.getElementById('costArr').value);
+                        if (sort) {
+                            myChart.setOption(option(d.sort((a,b) => {return a.cost - b.cost;})), true);
+                        } else {
+                            myChart.setOption(option(d), true);
+                        }
+                    }
+                }
+            }
+        },
+        series: {
+            // name: (i) => JSON.stringify(i),
+            type: 'bar',
+            data: datas.map(item => item.cost),
+            markLine: {
+                silent: true,
+                itemStyle: {
+                    normal: {
+                        lineStyle: {
+                            // type: 'solid',
+                        },
+                        label: {
+                            show: true,
+                            position: 'end'
+                        }
+                    }
+                },
+                // silent: true,
+                data: [{
+                    name: '80分位数',
+                    yAxis: <%= percentile(80, costArr.map(i => i.cost)) %>
+                }]
+            }
+        }
+    });
+
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option(costDatas));
 
 </script>
 </html>
