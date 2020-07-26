@@ -166,7 +166,7 @@ exports.getResultObj = async function (exerciseId, costThreshold, cookie) {
         let ua = Object.values(exercise.userAnswers).find(item => item.questionId == questionId);
         let correct = answerResultMap[questionId];
         return {
-            idx: (ua && ua.questionIndex) || report.answers.findIndex(item => item.questionId == questionId) + 1,
+            idx: (ua && (ua.questionIndex + 1))  || report.answers.findIndex(item => item.questionId == questionId) + 1,
             questionId,
             correct,
             cost: ua && ua.time,
