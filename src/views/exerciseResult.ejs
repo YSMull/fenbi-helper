@@ -344,11 +344,8 @@
             } )(q)%> noselect"
                  onclick="hideContent(<%= q.questionId %>)">
                 <span><%= cleanTitle(q.source) %></span>
-                <% for (let point of q.keypoints) { %>
-                    <span class="quz-tag"><%= point %></span>
-                <% } %>
-                <% for (let tag of q.tags) { %>
-                    <span class="quz-tag"><%= tag %></span>
+                <% for (let i = 0; i < 4 && i < q.keypoints.concat(q.tags).length; i++) { %>
+                    <span class="quz-tag"><%= q.keypoints.concat(q.tags)[i] %></span>
                 <% } %>
                 <span class="quz-tag-group">
                     <span class="quz-tag-collect" style="display: <%=((hasCollect) => {
