@@ -124,6 +124,22 @@ async function getEpisodesByIds(questionIds, cookie) {
     return result.data;
 }
 
+exports.saveNote = async function (questionId, content, cookie) {
+    let result = await httpRequest({
+        url: `https://tiku.fenbi.com/api/xingce/notes`,
+        method: "POST",
+        headers: {
+            ...headers,
+            'Content-Type': 'application/json;charset=UTF-8',
+            cookie
+        },
+        body: JSON.stringify({
+            content,
+            questionId: Number.parseInt(questionId)
+        })
+    });
+}
+
 exports.getExerciseHistory = async function (cookie) {
     let result = await Promise.all([
         getExerciseHistory(1, cookie),

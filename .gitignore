@@ -120,3 +120,7 @@ dist
 *.iml
 
 .idea
+.DS_Store
+yarn.lock
+pnpm-lock.yaml
+package-lock.json

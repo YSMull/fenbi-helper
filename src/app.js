@@ -66,6 +66,12 @@ router.post('/api/search', koaBody(), async ctx => {
     ctx.body = await exerciseResult.search(text, cookie);
 });
 
+router.post('/api/saveNote/:questionId', koaBody(), async ctx => {
+    let cookie = ctx.request.headers['cookie']
+    let questionId = ctx.params.questionId;
+    let {noteContent} = ctx.request.body;
+    ctx.body = await exerciseResult.saveNote(questionId, noteContent, cookie);
+});
 
 router.get('/history', async ctx => {
     let cookie = ctx.request.headers['cookie']
