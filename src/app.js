@@ -73,6 +73,10 @@ router.post('/api/saveNote/:questionId', koaBody(), async ctx => {
     ctx.body = await exerciseResult.saveNote(questionId, noteContent, cookie);
 });
 
+router.get('/calc', async ctx => {
+    await ctx.render('calc', {});
+});
+
 router.get('/history', async ctx => {
     let cookie = ctx.request.headers['cookie']
     await ctx.render('history', await exerciseResult.getExerciseHistory(cookie));
@@ -126,7 +130,7 @@ router.get('/api/video/:questionId', async ctx => {
     let questionId = ctx.params.questionId;
     let cookie = ctx.request.headers['cookie'];
     ctx.body = await exerciseResult.getVideoUrl(questionId, cookie);
-})
+});
 
 router.get('/api/comment/:questionId', async ctx => {
     let questionId = ctx.params.questionId;
@@ -134,6 +138,10 @@ router.get('/api/comment/:questionId', async ctx => {
     ctx.body = await exerciseResult.getComments(questionId, cookie);
 });
 
+router.get('/favicon.ico', async ctx => {
+    ctx.body = ''
+});
+
 router.all('/', async ctx => {
     ctx.redirect('/history');
-})
+});

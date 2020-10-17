@@ -1,0 +1,155 @@
+<html lang="zh">
+<head>
+    <style>
+        .question {
+            font-family: monospace, serif;
+            margin-bottom: 10px;
+        }
+
+        .userResult {
+            margin-left: 10px;
+        }
+
+        .wrongResult {
+            display: inline;
+            margin-left: 10px;
+            color: red;
+        }
+
+        .rightResult {
+            display: inline;
+            margin-left: 10px;
+            color: green;
+        }
+
+    </style>
+</head>
+
+<body style="background: #f5f7fa;">
+<div style="margin: 10px;padding: 10px;">
+    <label for="bitNum">位数：</label>
+    <input style="width: 30px" type="text" id="bitNum" value="2"/>
+</div>
+
+<div id="task"></div>
+
+<input type="button" id="submit" value="提交"/>
+<input type="button" class="next" id="nextAdd" value="再来一组加法"/>
+<input type="button" class="next" id="nextSub" value="再来一组减法"/>
+<input type="button" class="next" id="nextMul" value="再来一组乘法"/>
+<input type="button" class="next" id="nextDiv" value="再来一组除法"/>
+</body>
+
+<script>
+    let beginTime = new Date();
+    let endTime;
+
+    document.getElementById('submit').addEventListener('click', function () {
+        let task = document.getElementById('task');
+        for (let t of task.children) {
+            let result = eval(t.children[0].innerText);
+            let isDiv = false;
+            if (`${result}`.includes('.')) {
+                isDiv = true;
+                result = (result * 100).toPrecision(2);
+            }
+            if (Math.floor(result) !== Number.parseInt(t.children[1].value)) {
+                if (t.children[2]) {
+                    t.children[2].className = 'wrongResult';
+                    t.children[2].value = eval(t.children[0].innerText);
+                } else {
+                    let a = document.createElement('div');
+                    a.className = 'wrongResult';
+                    if (isDiv) {
+                        a.innerText = `${result}%`;
+                    } else {
+                        a.innerText = result;
+                    }
+                    t.appendChild(a);
+                }
+            } else {
+                if (t.children[2]) {
+                    t.removeChild(t.children[2]);
+                }
+                let a = document.createElement('div');
+                a.className = 'rightResult'
+                if (isDiv) {
+                    a.innerText = `${result}%`;
+                } else {
+                    a.innerText = result;
+                }
+                t.appendChild(a);
+            }
+        }
+
+        if (beginTime != null) {
+            endTime = new Date();
+            console.log(`总共耗时 ${Math.floor((endTime - beginTime) / 1000)}秒`);
+            beginTime = null;
+        }
+    });
+    for (let n of document.getElementsByClassName('next')) {
+        n.addEventListener('click', function () {
+            let task = document.getElementById('task');
+            task.innerHTML = '';
+            newTask(Number.parseInt(document.getElementById('bitNum').value), n.id);
+            beginTime = new Date();
+        });
+    }
+
+    function gen(N) {
+        let str = `${Math.floor(Math.random() * Math.pow(10, N))}`;
+        while (str.length < N) {
+            str += `${Math.floor(Math.random() * 10)}`;
+        }
+        return str;
+    }
+
+    function genDiv(N) {
+        let a = gen(N);
+        let mArr = [0,1,2];
+        let M = mArr[Math.floor(Math.random() * mArr.length)];
+        let b = gen(N + M);
+
+        if (M === 0) {
+            if (a > b) return `${b} / ${a}`;
+            else return `${a} / ${b}`;
+        } else {
+            return `${a} / ${b}`;
+        }
+    }
+
+    function genNormal(N, op) {
+        let a = gen(N);
+        let b = gen(N);
+        if (a < b) return `${b} ${op} ${a}`;
+        else return `${a} ${op} ${b}`;
+    }
+
+    function newTask(N, op) {
+        let task = document.getElementById('task')
+        for (let i = 0; i < 10; i++) {
+            let q = document.createElement('div');
+            q.className = 'question'
+            let span = document.createElement('span');
+            if (op === 'nextAdd') {
+                span.innerText = genNormal(N, '+')
+            } else if (op === 'nextSub') {
+                span.innerText = genNormal(N, '-');
+            } else if (op === 'nextMul') {
+                span.innerText = genNormal(N, '*');
+            } else if (op === 'nextDiv') {
+                span.innerText = genDiv(N);
+            }
+            q.appendChild(span);
+            let a = document.createElement('input');
+            a.id = `ans-${i}`;
+            a.className = 'userResult'
+            q.appendChild(a);
+            task.appendChild(q)
+        }
+    }
+
+    newTask(Number.parseInt(document.getElementById('bitNum').value), 'nextAdd');
+</script>
+</html>

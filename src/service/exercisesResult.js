@@ -184,6 +184,7 @@ exports.getResultObj = async function (exerciseId, costThreshold, cookie) {
 
     report.answers.forEach(answer => {
         // 只筛选出你做了的
+        // todo: 这里判断下，收藏的题的idx是否在你做了的题的idx的range里
         if (answer.status !== 10 || collectionIds.includes(answer.questionId)) {
             answerResultMap[answer.questionId] = answer.correct;
         }
