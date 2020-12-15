@@ -26,7 +26,7 @@ render(app, {
     debug: false,
 });
 
-app.use(serve('./views/js'))
+app.use(serve(__dirname + '/views/js'))
 
 app.use(router.routes()).use(router.allowedMethods())
 
