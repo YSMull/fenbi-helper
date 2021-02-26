@@ -17,6 +17,7 @@ let headers = {
 };
 
 let cleanTitle = function (title) {
+    if (!title) return "无来源";
     return title.replace(/辽宁\/湖南\/湖北\/安徽\/四川\/福建\/云南\/黑龙江\/江西\/广西\/贵州\/海南\/内蒙古\/山西\/重庆\/宁夏\/西藏/g, '湖北')
         .replace(/山西\/辽宁\/黑龙江\/福建\/湖北\/ 湖南\/广西\/海南\/四川\/重庆\/ 云南\/ 西藏\/陕西\/青海\/宁夏\/ 新疆兵团/g, '湖北')
         .replace(/贵州\/四川\/福建\/黑龙江\/湖北\/山西\/重庆\/辽宁\/海南\/江西\/天津\/陕西\/云南\/广西\/山东\/湖南/g, '湖北')
@@ -246,7 +247,7 @@ exports.getResultObj = async function (exerciseId, costThreshold, cookie) {
         q.source = solutionObj.source;
 
         concernSource.some(item => {
-            if (q.source.includes(item)) {
+            if (q.source && q.source.includes(item)) {
                 concernSourceCountMap[item] = (concernSourceCountMap[item] || 0) + 1;
                 return true;
             }
