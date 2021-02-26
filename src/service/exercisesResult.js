@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const moment = require('moment');
+const qs = require('querystring');
 const percentile = require('percentile');
 
 const {httpRequest} = require('../util/httpUtil');
@@ -150,6 +151,25 @@ exports.saveNote = async function (questionId, content, cookie) {
     });
 }
 
+let getNotesMapByIds = async function (questionIds, cookie) {
+    let params = qs.stringify({
+        questionIds: questionIds.join(',')
+    })
+    let result = await httpRequest({
+        url: `https://tiku.fenbi.com/api/xingce/notes?` + params,
+        method: "GET",
+        headers: {
+            ...headers,
+            'Content-Type': 'application/json;charset=UTF-8',
+            cookie
+        },
+        json: true,
+    });
+    result = result.filter(a => a);
+
+    return _.zipObject(result.map(r => r.questionId), result.map(r => r.content));
+}
+
 exports.getExerciseHistory = async function (cookie) {
     let result = await Promise.all([
         getExerciseHistory(1, cookie),
@@ -206,6 +226,7 @@ exports.getResultObj = async function (exerciseId, costThreshold, cookie) {
     // let questionMetaMap = await getQuestionMetaByIds(concernQuestions.map(q => q.questionId));
     // let questionKeyPointsMap = await getQuestionKeyPointsByIds(concernQuestions.map(q => q.questionId));
     let solutionMap = await getSolutionsByIds(concernQuestions.map(q => q.questionId), cookie);
+    let notesMap = await getNotesMapByIds(concernQuestions.map(q => q.questionId), cookie);
 
     concernQuestions = _.orderBy(concernQuestions, ['correct', 'cost', 'idx'], ['asc', 'desc', 'asc']);
 
@@ -246,8 +267,8 @@ exports.getResultObj = async function (exerciseId, costThreshold, cookie) {
 
         q.totalCount = solutionObj.questionMeta.totalCount;
 
-        if (solutionObj.note) {
-            q.note = solutionObj.note.content;
+        if (notesMap[q.questionId]) {
+            q.note = notesMap[q.questionId];
         }
 
         if (solutionObj.material) {
