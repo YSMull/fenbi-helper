@@ -294,6 +294,8 @@
         }
     </style>
     <script src="/echarts.min.js"></script>
+    <script src="/easymde.min.js"></script>
+    <link rel="stylesheet" href="/easymde.min.css">
     <title>题目列表</title>
 </head>
 <body style="background: #f5f7fa;">
@@ -423,7 +425,11 @@
                     保存笔记
                 </a>
                 <br>
-                <textarea id="note-<%= q.questionId %>" class="note-area"><%= q.note %></textarea>
+                <div style="margin-top: 20px">
+                    <textarea id="mdNote-<%= q.questionId %>"></textarea>
+                </div>
+
+                <span id="note-<%= q.questionId %>" style="display: none;" class="note-area"><%= q.note %></span>
             </div>
             <div>
                 我的选择: <%= q.myAnswer %>
@@ -443,26 +449,6 @@
             document.getElementById(`ans-${questionId}`).style.display = "none";
             document.getElementById(`show-ans-${questionId}`).innerHTML = "查看解析";
         }
-    }
-
-    function saveNote(questionId) {
-        let note = document.getElementById(`note-${questionId}`);
-        let noteContent = note.value;
-        fetch(`/api/saveNote/${questionId}`, {
-            method: 'POST',
-            headers: {
-                'content-type': 'application/json'
-            },
-            body: JSON.stringify({
-                noteContent
-            })
-        }).then(response => {
-            if (response.status === 200) {
-                return response.json();
-            } else {
-
-            }
-        })
     }
 
     function showComment(questionId) {
@@ -626,6 +612,66 @@
         fold = !fold;
     }
     foldAll(<%= concernQuestions.map(i => i.questionId) %>)
+
+    let mdOptions = {
+        autofocus: true,
+        forceSync: true,
+        autoRefresh: {
+            delay: 300,
+        },
+        hideIcons: ["guide", "heading"],
+        minHeight: "300px",
+        maxHeight: "300px",
+        parsingConfig: {
+            allowAtxHeaderWithoutSpace: true,
+            strikethrough: false,
+            underscoresBreakWords: true,
+        },
+        placeholder: "请输入笔记",
+        showIcons: ["code", "table"],
+        spellChecker: false,
+        status: false,
+        styleSelectedText: false,
+        sideBySideFullscreen: false,
+        syncSideBySidePreviewScroll: false,
+        tabSize: 4,
+        // toolbar: false,
+        toolbarTips: false,
+
+    };
+
+    var mdeMap = {};
+    function genMdNote(...questionIds) {
+        questionIds.forEach(questionId => {
+            let easyMDE = new EasyMDE(Object.assign({}, mdOptions, {element: document.getElementById(`mdNote-${questionId}`)}));
+            mdeMap[questionId] = easyMDE;
+            let content = document.getElementById(`note-${questionId}`).innerText;
+            easyMDE.value(content);
+            easyMDE.togglePreview();
+            debugger
+        });
+    }
+
+    function saveNote(questionId) {
+        let noteContent = mdeMap[questionId].value();
+        fetch(`/api/saveNote/${questionId}`, {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                noteContent
+            })
+        }).then(response => {
+            if (response.status === 200) {
+                return response.json();
+            } else {
+
+            }
+        })
+    }
+
+    genMdNote(<%= concernQuestions.map(i => i.questionId) %>)
 
     let myChart = echarts.init(document.getElementById('costChart'));
     let costDatas = JSON.parse(document.getElementById('costArr').value);
