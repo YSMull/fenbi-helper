@@ -150,6 +150,10 @@ exports.saveNote = async function (questionId, content, cookie) {
             questionId: Number.parseInt(questionId)
         })
     });
+    if (!result) {
+        throw new Error('save note error!')
+    }
+    return result;
 }
 
 let getNotesMapByIds = async function (questionIds, cookie) {

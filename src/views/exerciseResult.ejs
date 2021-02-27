@@ -12,7 +12,7 @@
         }
 
         .quz-item:hover {
-            box-shadow: 0 1px 10px 0 #888888;
+            box-shadow: 1px 2px 4px 0 #888888;
         }
 
         .quz-tag {
@@ -62,6 +62,17 @@
         .quz-tag-note-rethink {
             font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
             background: #e31313;
+            border-radius: 4px;
+            border: solid 1px #dedede;
+            color: #fff;
+            padding: 0 8px;
+            margin-left: 8px;
+            font-size: .875rem;
+        }
+
+        .quz-tag-note-acc {
+            font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
+            background: #36943b;
             border-radius: 4px;
             border: solid 1px #dedede;
             color: #fff;
@@ -360,6 +371,11 @@
     </p>
     <div id="costChart" style="width: auto;height:400px;"></div>
     <% for (let q of concernQuestions) { %>
+        <div id="<%= q.questionId %>-tag" style="width: 200px;display: inline-block; white-space: nowrap;overflow: initial;">
+            <% for (let i = 0; i < 4 && i < q.keypoints.concat(q.tags).length; i++) { %>
+                <span class="quz-tag" style="margin-left: 0; border-radius: 0;"><%= q.keypoints.concat(q.tags)[i] %></span>
+            <% } %>
+        </div>
         <div class="quz-item" id="<%= q.questionId %>">
             <div class="<%= ((q) => {
                 if (!q.correct) return 'quz-title-wrong';
@@ -368,10 +384,8 @@
             } )(q)%> noselect"
                  onclick="hideContent(<%= q.questionId %>)">
                 <span><%= cleanTitle(q.source) %></span>
-                <% for (let i = 0; i < 4 && i < q.keypoints.concat(q.tags).length; i++) { %>
-                    <span class="quz-tag"><%= q.keypoints.concat(q.tags)[i] %></span>
-                <% } %>
                 <span class="quz-tag-group">
+
                     <span class="quz-tag-collect" style="display: <%=((hasCollect) => {
                         if (hasCollect) return 'inline';
                         else return 'none';
@@ -383,10 +397,13 @@
                     <% if (q.note && q.note.length && q.note.includes("[方法]") > 0) {%>
                         <span class="quz-tag-note-method">方法</span>
                     <% } %>
-
+                    <% if (q.note && q.note.length && q.note.includes("[积累]") > 0) {%>
+                        <span class="quz-tag-note-acc">积累</span>
+                    <% } %>
                     <% if (q.note && q.note.length && q.note.includes("[反思]") > 0) {%>
                         <span class="quz-tag-note-rethink">反思</span>
                     <% } %>
+
 
                     <span class="quz-tag">
                         <%= ((cost) => {
@@ -697,7 +714,7 @@
             if (response.status === 200) {
                 return response.json();
             } else {
-
+                alert('笔记保存失败！');
             }
         })
     }
@@ -963,7 +980,7 @@
     function genIdxMap(idxStr) {
         let questions = JSON.parse(idxStr);
         questions.forEach(q => {
-            idxMap[q.idx] = q.questionId;
+            idxMap[q.idx] = q.questionId + '-tag';
         });
     }
 
