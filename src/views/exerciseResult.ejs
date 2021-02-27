@@ -59,6 +59,17 @@
             font-size: .875rem;
         }
 
+        .quz-tag-note-rethink {
+            font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
+            background: #e31313;
+            border-radius: 4px;
+            border: solid 1px #dedede;
+            color: #fff;
+            padding: 0 8px;
+            margin-left: 8px;
+            font-size: .875rem;
+        }
+
         .quz-tag-correct {
             font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
             background: #f1f8ff;
@@ -372,6 +383,11 @@
                     <% if (q.note && q.note.length && q.note.includes("[方法]") > 0) {%>
                         <span class="quz-tag-note-method">方法</span>
                     <% } %>
+
+                    <% if (q.note && q.note.length && q.note.includes("[反思]") > 0) {%>
+                        <span class="quz-tag-note-rethink">反思</span>
+                    <% } %>
+
                     <span class="quz-tag">
                         <%= ((cost) => {
                             if (cost) return `耗时${cost}秒`;
