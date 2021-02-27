@@ -762,6 +762,16 @@
             //     }
             // }
         }, {
+            gridIndex: 0,
+            type: 'value',
+            name: '累计耗时',
+            min: 0,
+            max: datas.length * <%= avg(costArr.map(i => i.cost+1)) %>,
+            axisLabel: {
+                formatter: '{value} s'
+            },
+            inverse: true,
+        }, {
             gridIndex: 1,
             type: 'value',
             // name: '难度',
@@ -799,10 +809,28 @@
                 }]
             }
         }, {
+            name: '累计耗时',
+            type: 'line',
+            smooth: true,
+            data: datas.map(item => item.cost).map(((sum => value => sum += value)(0))),
+            yAxisIndex: 1,
+            areaStyle: {
+                color: "rgb(51,171,106, 0.4)"
+            },
+        }, {
+            name: '累计耗时(理想)',
+            type: 'line',
+            smooth: true,
+            data: datas.map(item => item.cost).map(((sum => value => sum += (30/35*60))(0))),
+            yAxisIndex: 1,
+            areaStyle: {
+                color: "rgba(58,77,233,0.3)"
+            },
+        }, {
             name: '难度',
             type: 'bar',
             xAxisIndex: 1,
-            yAxisIndex: 1,
+            yAxisIndex: 2,
             data: datas.map(item => item.correctRatio),
             markLine: {
                 silent: true,
@@ -857,7 +885,7 @@
                 color: '#999'
             }
         }, {
-            seriesIndex: 1,
+            seriesIndex: 3,
             orient:'horizontal',
             left: 'center',
             pieces: [{
