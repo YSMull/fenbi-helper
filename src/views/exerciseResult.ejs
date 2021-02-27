@@ -81,6 +81,32 @@
             font-size: .875rem;
         }
 
+        .quz-tag-word {
+            cursor: pointer;
+            font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
+            background: #8a8a8a;
+            border-radius: 4px;
+            border: solid 1px #dedede;
+            color: #fff;
+            padding: 0 8px;
+            margin-left: 8px;
+            font-size: .875rem;
+            -webkit-transition: all .3s cubic-bezier(.645, .045, .355, 1);
+            transition: all .3s cubic-bezier(.645, .045, .355, 1);
+        }
+
+        .quz-tag-word:hover {
+            cursor: pointer;
+            font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
+            background: #6b6a6a;
+            border-radius: 4px;
+            border: solid 1px #dedede;
+            color: #fff;
+            padding: 0 8px;
+            margin-left: 8px;
+            font-size: .875rem;
+        }
+
         .quz-tag-correct {
             font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
             background: #f1f8ff;
@@ -376,6 +402,16 @@
                 <span class="quz-tag" style="margin-left: 0; border-radius: 0;"><%= q.keypoints.concat(q.tags)[i] %></span>
             <% } %>
         </div>
+
+        <% if (q.wordList) {%>
+        <div>
+            <% for (let i = 0; i < q.wordList.length; i++) { %>
+                <span class="quz-tag-word" style="margin-left: 0; border-radius: 0;"
+                      onclick="fetchZjWord(`<%= q.wordList[i] %>`)"><%= q.wordList[i] %></span>
+            <% } %>
+        </div>
+        <% } %>
+
         <div class="quz-item" id="<%= q.questionId %>">
             <div class="<%= ((q) => {
                 if (!q.correct) return 'quz-title-wrong';
@@ -385,7 +421,6 @@
                  onclick="hideContent(<%= q.questionId %>)">
                 <span><%= cleanTitle(q.source) %></span>
                 <span class="quz-tag-group">
-
                     <span class="quz-tag-collect" style="display: <%=((hasCollect) => {
                         if (hasCollect) return 'inline';
                         else return 'none';
@@ -988,6 +1023,24 @@
     myChart.on('click', function (params) {
         location.hash = idxMap[params.name];
     });
+
+    function fetchZjWord(word) {
+        fetch(`/api/zj`, {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                word: word,
+            })
+        }).then(response => {
+            if (response.status === 200) {
+                return response.text();
+            }
+        }).then(res => {
+            window.open(res, "_blank");
+        })
+    }
 
 </script>
 </html>

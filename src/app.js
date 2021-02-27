@@ -138,6 +138,11 @@ router.get('/api/comment/:questionId', async ctx => {
     ctx.body = await exerciseResult.getComments(questionId, cookie);
 });
 
+router.post('/api/zj', koaBody(), async ctx => {
+    let {word} = ctx.request.body;
+    ctx.body = await exerciseResult.zjWord(word);
+});
+
 router.get('/favicon.ico', async ctx => {
     ctx.body = ''
 });

@@ -136,6 +136,40 @@ async function getEpisodesByIds(questionIds, cookie) {
     return result.data;
 }
 
+function parseWordListFromNote(content) {
+    let lines = content.split('\n');
+    let s = lines.indexOf('[start积累]');
+    let e = lines.indexOf('[end积累]');
+    if (s !== -1 && e !== -1) {
+        lines = lines.slice(s+1, e).filter(a => a);
+        let wdList = lines.map(wl => {
+            let w = wl.replace(/.*\* \[?([^\]]*)\]?\[?[^\[\]]*\]?[：|:].*/g, '$1')
+            return w;
+        });
+        return wdList.filter(a => a.length <= 5);
+    } else {
+        return [];
+    }
+}
+
+exports.zjWord = async function (word) {
+    let result = await httpRequest({
+        url: `https://zaojv.com/wordQueryDo.php`,
+        method: "POST",
+        headers: {
+            ...headers,
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: qs.stringify({
+            nsid: 0,
+            s: 45957424262910633321,
+            wo: word,
+            directGo: 1
+        })
+    });
+    return "https://zaojv.com/" + result.replaceAll("\n", "").replace(/(.*)HREF="(.*)".*/g, '$2')
+}
+
 exports.saveNote = async function (questionId, content, cookie) {
     let result = await httpRequest({
         url: `https://tiku.fenbi.com/api/xingce/notes`,
@@ -274,6 +308,7 @@ exports.getResultObj = async function (exerciseId, costThreshold, cookie) {
 
         if (notesMap[q.questionId]) {
             q.note = notesMap[q.questionId];
+            q.wordList = parseWordListFromNote(q.note);
         }
 
         if (solutionObj.material) {
