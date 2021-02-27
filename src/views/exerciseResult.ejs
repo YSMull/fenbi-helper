@@ -898,5 +898,19 @@
     // 使用刚指定的配置项和数据显示图表。
     myChart.setOption(option(costDatas));
 
+
+    let idxMap = {};
+    function genIdxMap(idxStr) {
+        let questions = JSON.parse(idxStr);
+        questions.forEach(q => {
+            idxMap[q.idx] = q.questionId;
+        });
+    }
+
+    genIdxMap(`<%- JSON.stringify(concernQuestions.map(q => ({idx: q.idx, questionId: q.questionId})))%>`);
+    myChart.on('click', function (params) {
+        location.hash = idxMap[params.name];
+    });
+
 </script>
 </html>
