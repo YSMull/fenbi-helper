@@ -48,6 +48,17 @@
             font-size: .875rem;
         }
 
+        .quz-tag-note-method {
+            font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
+            background: #ff5200;
+            border-radius: 4px;
+            border: solid 1px #dedede;
+            color: #fff;
+            padding: 0 8px;
+            margin-left: 8px;
+            font-size: .875rem;
+        }
+
         .quz-tag-correct {
             font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
             background: #f1f8ff;
@@ -358,6 +369,9 @@
                         if (note != null && note != '') return 'inline';
                         else return 'none';
                     })(q.note)%>" id="quz-tag-note-<%= q.questionId %>">笔记</span>
+                    <% if (q.note && q.note.length && q.note.includes("[方法]") > 0) {%>
+                        <span class="quz-tag-note-method">方法</span>
+                    <% } %>
                     <span class="quz-tag">
                         <%= ((cost) => {
                             if (cost) return `耗时${cost}秒`;
@@ -620,8 +634,8 @@
             delay: 300,
         },
         hideIcons: ["guide", "heading"],
-        minHeight: "300px",
-        maxHeight: "300px",
+        minHeight: "250px",
+        maxHeight: "250px",
         parsingConfig: {
             allowAtxHeaderWithoutSpace: true,
             strikethrough: false,
@@ -646,8 +660,10 @@
             let easyMDE = new EasyMDE(Object.assign({}, mdOptions, {element: document.getElementById(`mdNote-${questionId}`)}));
             mdeMap[questionId] = easyMDE;
             let content = document.getElementById(`note-${questionId}`).innerText;
-            easyMDE.value(content);
-            easyMDE.togglePreview();
+            if(content.length > 0) {
+                easyMDE.value(content);
+                easyMDE.togglePreview();
+            }
         });
     }
 
