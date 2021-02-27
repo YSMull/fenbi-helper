@@ -648,7 +648,6 @@
             let content = document.getElementById(`note-${questionId}`).innerText;
             easyMDE.value(content);
             easyMDE.togglePreview();
-            debugger
         });
     }
 
@@ -681,23 +680,123 @@
         title: {
             x:'center',
             y:'top',
-            textAlign:'center',
-            text: '耗时分析'
+            // textAlign:'center',
+            text: '习题耗时和难度分析'
         },
         tooltip: {
-            trigger: 'axis'
+            show: true,
+            trigger: 'axis',
+            // axisPointer: {
+            //     type: "shadow"
+            // }
         },
-        xAxis: {
-            data: datas.map(i => i.idx)
+        grid: [{
+            height: '35%',
+        }, {
+            top: '60%',
+            height: '30%',
+        }],
+        axisPointer: {
+            link: {xAxisIndex: 'all'}
         },
-        yAxis: {
+        xAxis: [{
+            data: datas.map(i => i.idx),
+            // type: 'category',
+            axisLine: {onZero: true},
+            gridIndex: 0
+        }, {
+            data: datas.map(i => i.idx),
+            // type: 'category',
+            axisLine: {onZero: true},
+            gridIndex: 1,
+        }],
+        yAxis: [{
+            gridIndex: 0,
+            type: 'value',
+            // name: '耗时',
+            // min: 0,
+            // max: 250,
+            // interval: 50,
+            axisLabel: {
+                formatter: '{value} s'
+            },
             splitLine: {
                 show: false
+            },
+            // axisPointer: {
+            //     show: true,
+            //     label: {
+            //         formatter: '耗时 {value} 秒',
+            //     }
+            // }
+        }, {
+            gridIndex: 1,
+            type: 'value',
+            // name: '难度',
+            min: 0,
+            max: 100,
+            // interval: 50,
+            axisLabel: {
+                formatter: '{value} %'
+            },
+            splitLine: {
+                show: false
+            },
+        }],
+        series: [{
+            name: '耗时',
+            type: 'bar',
+            data: datas.map(item => item.cost),
+            markLine: {
+                silent: true,
+                itemStyle: {
+                    normal: {
+                        lineStyle: {
+                            // type: 'solid',
+                        },
+                        label: {
+                            show: true,
+                            position: 'end'
+                        }
+                    }
+                },
+                // silent: true,
+                data: [{
+                    name: '80分位数',
+                    yAxis: <%= percentile(80, costArr.map(i => i.cost)) %>
+                }]
             }
-        },
-        visualMap: {
+        }, {
+            name: '难度',
+            type: 'bar',
+            xAxisIndex: 1,
+            yAxisIndex: 1,
+            data: datas.map(item => item.correctRatio),
+            markLine: {
+                silent: true,
+                itemStyle: {
+                    normal: {
+                        lineStyle: {
+                            // type: 'solid',
+                        },
+                        label: {
+                            show: true,
+                            position: 'end'
+                        }
+                    }
+                },
+                // silent: true,
+                data: [{
+                    name: '平均难度',
+                    yAxis: <%= avg(costArr.map(i => i.correctRatio)) %>
+                }]
+            }
+        }],
+        visualMap: [{
+            seriesIndex: 0,
             orient:'horizontal',
             left: 'center',
+            top: '55%',
             pieces: [{
                 gt: 0,
                 lte: 60,
@@ -725,14 +824,47 @@
             outOfRange: {
                 color: '#999'
             }
-        },
+        }, {
+            seriesIndex: 1,
+            orient:'horizontal',
+            left: 'center',
+            pieces: [{
+                gt: 0,
+                lte: 20,
+                color: '#000000'
+
+            }, {
+                gt: 20,
+                lte: 30,
+                color: '#ad0000'
+            }, {
+                gt: 30,
+                lte: 50,
+                color: '#fa6e6e'
+
+            }, {
+                gt: 50,
+                lte: 60,
+                color: '#f1b448'
+            }, {
+                gt: 60,
+                lte: 75,
+                color: '#628de3'
+            }, {
+                gt: 75,
+                color: '#096'
+            }],
+            outOfRange: {
+                color: '#999'
+            },
+        }],
         toolbox: {
             right: 50,
             show : true,
             feature : {
                 myTool2:{//自定义按钮 danielinbiti,这里增加，selfbuttons可以随便取名字
                     show:true,//是否显示
-                    title:'排序', //鼠标移动上去显示的文字
+                    title:'按耗时排序', //鼠标移动上去显示的文字
                     icon: 'image://data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pg0KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPg0KPHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJDYXBhXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB2aWV3Qm94PSIwIDAgNTEyIDUxMiIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNTEyIDUxMjsiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPGc+DQoJPGc+DQoJCTxnPg0KCQkJPHJlY3QgeD0iMi4zNDQiIHk9IjQ4MCIgd2lkdGg9IjM4NCIgaGVpZ2h0PSIzMiIvPg0KCQkJPHJlY3QgeD0iMi4zNDQiIHk9IjM4NCIgd2lkdGg9IjMyMCIgaGVpZ2h0PSIzMiIvPg0KCQkJPHJlY3QgeD0iMi4zNDQiIHk9IjI4OCIgd2lkdGg9IjI1NiIgaGVpZ2h0PSIzMiIvPg0KCQkJPHJlY3QgeD0iMi4zNDQiIHk9IjE5MiIgd2lkdGg9IjE5MiIgaGVpZ2h0PSIzMiIvPg0KCQkJPHJlY3QgeD0iMi4zNDQiIHk9Ijk2IiB3aWR0aD0iMTI4IiBoZWlnaHQ9IjMyIi8+DQoJCQk8cmVjdCB4PSIyLjM0NCIgd2lkdGg9IjY0IiBoZWlnaHQ9IjMyIi8+DQoJCQk8cG9seWdvbiBwb2ludHM9IjQ4Ny4wMzIsNDI4LjY4OCA0NjYuMzQ0LDQ0OS4zNzYgNDY2LjM0NCwxMjggNDM0LjM0NCwxMjggNDM0LjM0NCw0NDkuMzc2IDQxMy42NTYsNDI4LjY4OCAzOTEuMDMyLDQ1MS4zMTIgDQoJCQkJNDUwLjM0NCw1MTAuNjI0IDUwOS42NTYsNDUxLjMxMiAJCQkiLz4NCgkJCTxyZWN0IHg9IjQzNC4zNDQiIHk9IjY0IiB3aWR0aD0iMzIiIGhlaWdodD0iMzIiLz4NCgkJCTxyZWN0IHg9IjQzNC4zNDQiIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIvPg0KCQk8L2c+DQoJPC9nPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPC9zdmc+DQo=',
                     onclick:function() {
                         sort = !sort;
@@ -743,33 +875,24 @@
                             myChart.setOption(option(d), true);
                         }
                     }
+                },
+                myTool3:{//自定义按钮 danielinbiti,这里增加，selfbuttons可以随便取名字
+                    show:true,//是否显示
+                    title:'按难度排序', //鼠标移动上去显示的文字
+                    icon: 'image://data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pg0KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPg0KPHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJDYXBhXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB2aWV3Qm94PSIwIDAgNTEyIDUxMiIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNTEyIDUxMjsiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPGc+DQoJPGc+DQoJCTxnPg0KCQkJPHJlY3QgeD0iMi4zNDQiIHk9IjQ4MCIgd2lkdGg9IjM4NCIgaGVpZ2h0PSIzMiIvPg0KCQkJPHJlY3QgeD0iMi4zNDQiIHk9IjM4NCIgd2lkdGg9IjMyMCIgaGVpZ2h0PSIzMiIvPg0KCQkJPHJlY3QgeD0iMi4zNDQiIHk9IjI4OCIgd2lkdGg9IjI1NiIgaGVpZ2h0PSIzMiIvPg0KCQkJPHJlY3QgeD0iMi4zNDQiIHk9IjE5MiIgd2lkdGg9IjE5MiIgaGVpZ2h0PSIzMiIvPg0KCQkJPHJlY3QgeD0iMi4zNDQiIHk9Ijk2IiB3aWR0aD0iMTI4IiBoZWlnaHQ9IjMyIi8+DQoJCQk8cmVjdCB4PSIyLjM0NCIgd2lkdGg9IjY0IiBoZWlnaHQ9IjMyIi8+DQoJCQk8cG9seWdvbiBwb2ludHM9IjQ4Ny4wMzIsNDI4LjY4OCA0NjYuMzQ0LDQ0OS4zNzYgNDY2LjM0NCwxMjggNDM0LjM0NCwxMjggNDM0LjM0NCw0NDkuMzc2IDQxMy42NTYsNDI4LjY4OCAzOTEuMDMyLDQ1MS4zMTIgDQoJCQkJNDUwLjM0NCw1MTAuNjI0IDUwOS42NTYsNDUxLjMxMiAJCQkiLz4NCgkJCTxyZWN0IHg9IjQzNC4zNDQiIHk9IjY0IiB3aWR0aD0iMzIiIGhlaWdodD0iMzIiLz4NCgkJCTxyZWN0IHg9IjQzNC4zNDQiIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIvPg0KCQk8L2c+DQoJPC9nPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPC9zdmc+DQo=',
+                    onclick:function() {
+                        sort = !sort;
+                        let d = JSON.parse(document.getElementById('costArr').value);
+                        if (sort) {
+                            myChart.setOption(option(d.sort((a,b) => {return b.correctRatio - a.correctRatio;})), true);
+                        } else {
+                            myChart.setOption(option(d), true);
+                        }
+                    }
                 }
             }
         },
-        series: {
-            // name: (i) => JSON.stringify(i),
-            type: 'bar',
-            data: datas.map(item => item.cost),
-            markLine: {
-                silent: true,
-                itemStyle: {
-                    normal: {
-                        lineStyle: {
-                            // type: 'solid',
-                        },
-                        label: {
-                            show: true,
-                            position: 'end'
-                        }
-                    }
-                },
-                // silent: true,
-                data: [{
-                    name: '80分位数',
-                    yAxis: <%= percentile(80, costArr.map(i => i.cost)) %>
-                }]
-            }
-        }
+
     });
 
     // 使用刚指定的配置项和数据显示图表。

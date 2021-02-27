@@ -256,7 +256,7 @@ exports.getResultObj = async function (exerciseId, costThreshold, cookie) {
 
         q.hasCollect = collectionIds.some(qid => qid == q.questionId);
 
-        q.keypoints = solutionObj.keypoints.map(i => i.name);
+        q.keypoints = solutionObj.keypoints ? solutionObj.keypoints.map(i => i.name) : [];
         q.tags = solutionObj.tags.map(i => i.name);
 
         // 答案解析
@@ -277,7 +277,7 @@ exports.getResultObj = async function (exerciseId, costThreshold, cookie) {
         }
     });
 
-    let costArr = concernQuestions.map(a => ({idx: a.idx, cost: a.cost})).filter(a => a.cost);
+    let costArr = concernQuestions.map(a => ({idx: a.idx, cost: a.cost, correctRatio: a.correctRatio})).filter(a => a.cost);
     // let mean = _.sum(costArr) / costArr.length;
     // let var1 = Math.sqrt(_.sum(costArr.map(i => (i - mean) * (i - mean))) / costArr.length);
     // let var2 = Math.sqrt(_.sum(costArr.map(i => (i - mean) * (i - mean))) / (costArr.length - 1));
@@ -290,7 +290,8 @@ exports.getResultObj = async function (exerciseId, costThreshold, cookie) {
         concernSourceCount: Object.keys(concernSourceCountMap).map(key => ({key, count: concernSourceCountMap[key]})),
         concernQuestions,
         costArr: _.orderBy(costArr, ['idx'], ['asc']),
-        percentile
+        percentile,
+        avg: arr => arr.reduce( ( p, c ) => p + c, 0 ) / arr.length,
     }
 }
 
