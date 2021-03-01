@@ -89,6 +89,10 @@
             border-left: 1px solid;
         }
     </style>
+    <script src="/d3.min.js"></script>
+<!--    <script type="text/javascript" src="//d3js.org/d3.v3.min.js"></script>-->
+    <script type="text/javascript" src="//cdn.jsdelivr.net/cal-heatmap/3.3.10/cal-heatmap.min.js"></script>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/cal-heatmap/3.3.10/cal-heatmap.css" />
 </head>
 
 <body style="background: #f5f7fa;">
@@ -103,7 +107,9 @@
     <% if (exerciseHistory.length == 0) {%>
         <script>window.location = '/setup' </script>
     <% } %>
+    <div id="cal-heatmap"></div>
 </div>
+
 <div>
     <% for (let c1 of groupItems) { %>
         <% if (c1.count > 0) { %>
@@ -163,6 +169,28 @@
 </div>
 </body>
 <script>
+    let cal = new CalHeatMap();
+    cal.init({
+        domain: 'month',
+        subDomain: "day",
+        domainGutter: 10,
+        tooltip: true,
+        // range: 12,
+        start: new Date('<%= moment().subtract(1, 'year').add(10, 'day').format('YYYY-MM-DD')%>'),
+        data: getData(),
+        subDomainTextFormat: function(date ,value) {
+            return value;
+        },
+        // subDomainTextFormat: "%d",
+        domainLabelFormat: "%m",
+        displayLegend: false,
+        cellSize: 15,
+    });
+
+    function getData() {
+        return <%- JSON.stringify(exerciseHeatMapData) %>;
+    }
+
     function showReport(exerciseId) {
         window.location = '/exercise/' + exerciseId;
     }

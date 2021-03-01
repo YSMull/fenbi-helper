@@ -34,7 +34,7 @@ app.use(koaBody())
 
 app.use(async(ctx, next) => {
     if (ctx.status === 404) {
-        ctx.redirect('/history');
+        ctx.redirect('/history-category-complex');
     } else {
         next();
     }
@@ -158,5 +158,5 @@ router.get('/favicon.ico', async ctx => {
 });
 
 router.all('/', async ctx => {
-    ctx.redirect('/history');
+    ctx.redirect('/history-category-complex');
 });

@@ -291,8 +291,23 @@ exports.getExerciseHistory = async function (cookie) {
     });
 
     let groupItems = await getCategories(exerciseHistoryGroup, cookie);
+
+    let exerciseHeatMapData = {};
+
+    // let dayTime = 3600 * 24 * 1000;
+    // let start = +moment().startOf('day').subtract(1, 'year').toDate();
+    // let end = +moment().startOf('day').toDate();
+    // for (let time = start; time < end; time += dayTime) {
+    //     exerciseHeatMapData[time / 1000] = 0;
+    // }
+    exerciseHistory.forEach(h => {
+        let v = moment(h.finishedDate).toDate().getTime() / 1000;
+        exerciseHeatMapData[v] = (exerciseHeatMapData[v] || 0) + h.answerCount;
+    });
+
     return {
         groupItems,
+        exerciseHeatMapData,
         exerciseHistoryGroup,
         exerciseHistory,
         cleanTitle,
