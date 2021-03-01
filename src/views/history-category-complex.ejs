@@ -175,8 +175,8 @@
         subDomain: "day",
         domainGutter: 10,
         tooltip: true,
-        // range: 12,
-        start: new Date('<%= moment().subtract(1, 'year').add(10, 'day').format('YYYY-MM-DD')%>'),
+        range: 12,
+        start: new Date('<%= moment().startOf('month').startOf('day').subtract(1, 'year').add(1, 'month').format('YYYY-MM-DD')%>'),
         data: getData(),
         subDomainTextFormat: function(date ,value) {
             return value;
