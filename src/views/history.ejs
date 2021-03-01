@@ -47,7 +47,6 @@
             cursor: pointer;
             font-size: 18px;
             border: 1px solid #00000059;
-            border-radius: 4px;
             padding: 2px;
             background-color: #fff;
             -webkit-transition: all .3s;
@@ -70,6 +69,7 @@
             background-size: 70%;
         }
     </style>
+    <link rel="stylesheet" href="/pure-min.css">
 </head>
 
 <body style="background: #f5f7fa;">
@@ -78,6 +78,7 @@
 <div style="margin: 20px auto 0; width: 700px;">
     <div style="margin-bottom: 10px;">
         <a href="/setup" class="switchAccount">切换账号</a>
+        <a href="/history-category" class="switchAccount">大纲视图</a>
     </div>
     <% if (exerciseHistory.length == 0) {%>
         <script>window.location = '/setup' </script>

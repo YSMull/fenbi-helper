@@ -1,0 +1,128 @@
+<html lang="zh">
+<head>
+    <style>
+        .block {
+            float: left;
+            width: 330px;
+            line-height: 1.2em;
+            padding-left: 18px;
+            padding-right: 18px;
+            padding-bottom: 8px;
+            position: relative;
+            border: 1px solid #ccc;
+            border-bottom: 1px solid #ccc;
+            border-right: 1px solid #ccc;
+            box-sizing: border-box;
+            box-shadow: 0 2px 9px #e6e6e6;
+            background-color: #f7f7f7;
+            transition: all .1s ease-in-out
+        }
+
+        .block:hover {
+            background-color: #fff
+        }
+
+        .block a {
+            font-family: \\\\5FAE\\8F6F\\96C5\\9ED1, Ubuntu, Arial, Helvetica, sans-serif;
+            font-weight: 400
+        }
+
+        .block h1 {
+            font-size: 1.4em;
+            margin-bottom: 5px
+        }
+
+        .his-item {
+            display: flex;
+            margin-bottom: 1px;
+            margin-top: 1px;
+            line-height: 1.5rem;
+            -webkit-transition: all .3s;
+            -moz-transition: all .3s;
+            -o-transition: all .3s;
+            transition: all .3s;
+            font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
+        }
+
+        .his-title {
+            color: #2d2d2ddb;
+            font-size: .875rem;
+            max-width: 230px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .his-title:hover {
+            cursor: pointer;
+            color: #217cc5;
+        }
+
+        .his-time {
+            font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
+            font-size: 12px;
+            position: absolute;
+            right: 16px;
+        }
+
+        .block_tag {
+            padding: 8px;
+            padding-left: 0;
+            font-size: 1.5em;
+            font-weight: 400;
+            color: #0a5365;
+            border-bottom: 1px solid rgba(68, 68, 68, 0.25);
+        }
+
+        .switchAccount {
+            text-decoration: none;
+            color: #494a4a;
+            cursor: pointer;
+            font-size: 18px;
+            border: 1px solid #00000059;
+            padding: 2px;
+            background-color: #fff;
+            -webkit-transition: all .3s;
+            -moz-transition: all .3s;
+            -o-transition: all .3s;
+            transition: all .3s;
+        }
+        .switchAccount:hover {
+            background-color: #e5e5e5;
+        }
+    </style>
+</head>
+
+<body style="background: #f5f7fa;">
+<div style="margin-left: 10px;">
+    <div style="margin-bottom: 10px;">
+        <a href="/setup" class="switchAccount">切换账号</a>
+        <a href="/history" class="switchAccount">列表视图</a>
+    </div>
+    <% if (exerciseHistory.length == 0) {%>
+        <script>window.location = '/setup' </script>
+    <% } %>
+</div>
+<div>
+    <% for (let group of Object.keys(exerciseHistoryGroup)) { %>
+        <div class="block" style="font-size:1em;margin:10px">
+            <div class="block_tag"><%= group %></div>
+            <% for (let history of exerciseHistoryGroup[group]) {%>
+                <div class="his-item" onclick="showReport(<%= history.id %>)" id="his-<%= history.id %>">
+                    <% let title = history.cleanName + `(${history.answerCount},${history.correctRate}%) (${Math.round(moment.duration(history.elapsedTime, 'seconds').asMinutes().toFixed(1))}m)` %>
+                    <div title="<%= title %>" class="his-title">
+                        <span><%= title %></span>
+                    </div>
+                    <div class="his-time"><%= history.finishedDate %></div>
+                </div>
+            <% } %>
+        </div>
+    <% } %>
+</div>
+</body>
+<script>
+    function showReport(exerciseId) {
+        window.location = '/exercise/' + exerciseId;
+    }
+</script>
+</html>

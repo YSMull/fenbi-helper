@@ -82,6 +82,11 @@ router.get('/history', async ctx => {
     await ctx.render('history', await exerciseResult.getExerciseHistory(cookie));
 });
 
+router.get('/history-category', async ctx => {
+    let cookie = ctx.request.headers['cookie']
+    await ctx.render('history-category', await exerciseResult.getExerciseHistory(cookie));
+});
+
 router.get('/setup', async ctx => {
     await ctx.render('setup', {});
 });

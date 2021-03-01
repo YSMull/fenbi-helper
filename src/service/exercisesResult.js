@@ -218,6 +218,7 @@ exports.getExerciseHistory = async function (cookie) {
     let exerciseReportMap = _.zipObject(exerciseHistory.map(item => item.id), await Promise.all(exerciseHistory.map(item => getExerciseReport(item.id, cookie))));
     exerciseHistory.forEach(history => {
         history.finishedTime = moment(history.updatedTime).format('YYYY-MM-DD HH:mm:ss')
+        history.finishedDate = moment(history.updatedTime).format('YYYY-MM-DD')
         let report = exerciseReportMap[history.id];
         if (report) {
             history.elapsedTime = report.elapsedTime;
@@ -226,9 +227,20 @@ exports.getExerciseHistory = async function (cookie) {
         }
     });
     exerciseHistory = exerciseHistory.filter(h => h.status === 1 && h.answerCount > 0);
+    let exerciseHistoryGroup = _.groupBy(exerciseHistory, h => {
+        let name = h.sheet.name || '';
+        if (name.startsWith('专项智能练习')) {
+            h.cleanName = name.replace(/(专项智能练习)（(.*)）/, '$1');
+            return name.replace(/专项智能练习（(.*)）/, '$1');
+        } else {
+            h.cleanName = cleanTitle(name);
+            return 'others';
+        }
+    });
 
     return {
-        exerciseHistory: exerciseHistory.filter(h => h.status === 1),
+        exerciseHistoryGroup,
+        exerciseHistory,
         cleanTitle,
         moment
     }
