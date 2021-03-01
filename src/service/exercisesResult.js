@@ -16,6 +16,58 @@ let headers = {
     "upgrade-insecure-requests": "1"
 };
 
+async function getCategories(group, cookie) {
+    let category = await httpRequest({
+        url: `https://tiku.fenbi.com/api/xingce/categories?&filter=keypoint&app=web&kav=12&version=3.0.0.0`,
+        method: "GET",
+        json: true,
+        headers: {
+            ...headers,
+            cookie
+        }
+    });
+    let rels = [];
+    buildCat(category, rels, group);
+    rels.push({type: '其它', items: group['others'], childTypes: []});
+    calcCount(rels);
+    return rels;
+}
+
+function buildCat(cats, roots, group) {
+    if (!cats || cats.length === 0) return;
+    for (let cat of cats) {
+        let name = cat.name.split('-')[0];
+        let obj = {
+            type: name,
+            childTypes: [],
+            items: [],
+        };
+        buildCat(cat.children, obj.childTypes, group);
+        if (!roots.map(i => i.type).includes(name)) {
+            obj.items = group[name] || []
+            roots.push(obj);
+        }
+    }
+}
+
+function sum (arr) {
+    return arr.reduce((a, b) => a + b, 0)
+}
+
+function _buildCount(root) {
+    if (!root) return 0;
+    let count = sum(root.items.map(i => i.answerCount)) + sum(root.childTypes.map(t => _buildCount(t)));
+    root.count = count;
+    return count;
+}
+
+function calcCount(roots) {
+    if (!roots || roots.length === 0) return;
+    for (let root of roots) {
+        _buildCount(root);
+    }
+}
+
 let cleanTitle = function (title) {
     if (!title) return "无来源";
     return title.replace(/辽宁\/湖南\/湖北\/安徽\/四川\/福建\/云南\/黑龙江\/江西\/广西\/贵州\/海南\/内蒙古\/山西\/重庆\/宁夏\/西藏/g, '湖北')
@@ -238,7 +290,9 @@ exports.getExerciseHistory = async function (cookie) {
         }
     });
 
+    let groupItems = await getCategories(exerciseHistoryGroup, cookie);
     return {
+        groupItems,
         exerciseHistoryGroup,
         exerciseHistory,
         cleanTitle,

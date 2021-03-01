@@ -1,0 +1,170 @@
+<html lang="zh">
+<head>
+    <style>
+        .block {
+            width: 330px;
+            float: left;
+            display: inline-grid;
+            line-height: 1.2em;
+            padding-left: 25px;
+            position: relative;
+            box-sizing: border-box;
+            /*box-shadow: 0 2px 9px #e6e6e6;*/
+            /*background-color: #f7f7f7;*/
+            transition: all .1s ease-in-out;
+
+        }
+
+        .block a {
+            font-family: \\\\5FAE\\8F6F\\96C5\\9ED1, Ubuntu, Arial, Helvetica, sans-serif;
+            font-weight: 400
+        }
+
+        .block h1 {
+            font-size: 1.4em;
+            margin-bottom: 5px
+        }
+
+        .his-item {
+            display: flex;
+            margin-left: 25px;
+            margin-bottom: 1px;
+            margin-top: 1px;
+            line-height: 1.5rem;
+            -webkit-transition: all .3s;
+            -moz-transition: all .3s;
+            -o-transition: all .3s;
+            transition: all .3s;
+            font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
+        }
+
+        .his-title {
+            color: #2d2d2ddb;
+            font-size: .875rem;
+            max-width: 230px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .his-title:hover {
+            cursor: pointer;
+            color: #217cc5;
+        }
+
+        .his-time {
+            font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
+            font-size: 12px;
+            position: absolute;
+            right: -6px;
+        }
+
+        .block_tag {
+            padding: 8px;
+            padding-left: 0;
+            font-size: 1.5em;
+            font-weight: 400;
+            color: #0a5365;
+            /*border-bottom: 1px solid rgba(68, 68, 68, 0.25);*/
+        }
+
+        .switchAccount {
+            text-decoration: none;
+            color: #494a4a;
+            cursor: pointer;
+            font-size: 18px;
+            border: 1px solid #00000059;
+            padding: 2px;
+            background-color: #fff;
+            -webkit-transition: all .3s;
+            -moz-transition: all .3s;
+            -o-transition: all .3s;
+            transition: all .3s;
+        }
+        .switchAccount:hover {
+            background-color: #e5e5e5;
+        }
+
+        .cat-class {
+            border-left: 1px solid;
+        }
+    </style>
+</head>
+
+<body style="background: #f5f7fa;">
+<div style="margin-left: 10px;">
+    <div style="margin-bottom: 10px;">
+        <a href="/setup" class="switchAccount">切换账号</a>
+        <a href="/history" class="switchAccount">列表视图</a>
+    </div>
+    <div>
+        目前练习总题数<span style="margin-left:10px;font-size: 1.5em; color: #0a5365;"><%= groupItems.map(i => i.count).reduce((a,b) => a+b, 0) %></span>
+    </div>
+    <% if (exerciseHistory.length == 0) {%>
+        <script>window.location = '/setup' </script>
+    <% } %>
+</div>
+<div>
+    <% for (let c1 of groupItems) { %>
+        <% if (c1.count > 0) { %>
+            <div class="block" style="font-size:1em;margin:10px;margin-right: 70px">
+            <div class="block_tag"><%= c1.type + `(${c1.count})` %></div>
+                <div class="cat-class">
+                    <% for (let c1Items of c1.items) {%>
+                        <div class="his-item" onclick="showReport(<%= c1Items.id %>)" id="his-<%= c1Items.id %>">
+                            <% let title = c1Items.cleanName + `(${c1Items.answerCount},${c1Items.correctRate}%) (${Math.round(moment.duration(c1Items.elapsedTime, 'seconds').asMinutes().toFixed(1))}m)` %>
+                            <div title="<%= title %>" class="his-title">
+                                <span><%= title %></span>
+                            </div>
+                            <div class="his-time"><%= c1Items.finishedDate %></div>
+                        </div>
+                    <% } %>
+                    <% for (let c2 of c1.childTypes) {%>
+                        <% if (c2.count > 0) { %>
+                            <div class="block" style="font-size:1em;">
+                                <div class="block_tag" style="font-size: 1.3em"><%= c2.type + `(${c2.count})` %></div>
+                                <div class="cat-class">
+                                    <% for (let c2Items of c2.items) {%>
+                                        <div class="his-item" onclick="showReport(<%= c2Items.id %>)" id="his-<%= c2Items.id %>">
+                                            <% let title = c2Items.cleanName + `(${c2Items.answerCount},${c2Items.correctRate}%) (${Math.round(moment.duration(c2Items.elapsedTime, 'seconds').asMinutes().toFixed(1))}m)` %>
+                                            <div title="<%= title %>" class="his-title">
+                                                <span><%= title %></span>
+                                            </div>
+                                            <div class="his-time"><%= c2Items.finishedDate %></div>
+                                        </div>
+                                    <% } %>
+                                    <% for (let c3 of c2.childTypes) {%>
+                                        <% if (c3.count > 0) { %>
+                                            <div class="block" style="font-size:1em;">
+                                                <div class="block_tag" style="font-size: 1em"><%= c3.type + `(${c3.count})` %></div>
+                                                <div class="cat-class">
+                                                    <% for (let c2Items of c3.items) {%>
+                                                        <div class="his-item" onclick="showReport(<%= c2Items.id %>)" id="his-<%= c2Items.id %>">
+                                                            <% let title = c2Items.cleanName + `(${c2Items.answerCount},${c2Items.correctRate}%) (${Math.round(moment.duration(c2Items.elapsedTime, 'seconds').asMinutes().toFixed(1))}m)` %>
+                                                            <div title="<%= title %>" class="his-title">
+                                                                <span><%= title %></span>
+                                                            </div>
+                                                            <div class="his-time"><%= c2Items.finishedDate %></div>
+                                                        </div>
+                                                    <% } %>
+                                                </div>
+                                            </div>
+                                        <% } %>
+                                    <% } %>
+                                </div>
+
+                            </div>
+                        <% } %>
+                    <% } %>
+                </div>
+        </div>
+        <% } %>
+    <% } %>
+</div>
+</body>
+<script>
+    function showReport(exerciseId) {
+        window.location = '/exercise/' + exerciseId;
+    }
+</script>
+</html>
