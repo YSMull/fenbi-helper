@@ -429,20 +429,27 @@
                         if (note != null && note != '') return 'inline';
                         else return 'none';
                     })(q.note)%>" id="quz-tag-note-<%= q.questionId %>">笔记</span>
-                    <% if (q.note && q.note.length && q.note.includes("[方法]") > 0) {%>
-                        <span class="quz-tag-note-method">方法</span>
-                    <% } %>
-                    <% if (q.note && q.note.length && q.note.includes("[积累]") > 0) {%>
-                        <span class="quz-tag-note-acc">积累</span>
-                    <% } %>
-                    <% if (q.note && q.note.length && q.note.includes("[例题]") > 0) {%>
-                        <span class="quz-tag-note-acc">例题</span>
-                    <% } %>
-                    <% if (q.note && q.note.length && (q.note.includes("[反思]") || q.note.includes("[总结]")) > 0) {%>
-                        <span class="quz-tag-note-rethink"><%= q.note.includes("[反思]") ? '反思' : '总结'%></span>
-                    <% } %>
 
-
+                    <span class="quz-tag-note-method" id="quz-tag-note-method-<%= q.questionId %>" style="display: <%=((note) => {
+                        if (note && note.length && note.includes('[方法]')) return 'inline';
+                        else return 'none';
+                    })(q.note)%>">方法</span>
+                    <span class="quz-tag-note-acc" id="quz-tag-note-acc-<%= q.questionId %>" style="display: <%=((note) => {
+                        if (note && note.length && note.includes('[积累]')) return 'inline';
+                        else return 'none';
+                    })(q.note)%>">积累</span>
+                    <span class="quz-tag-note-acc" id="quz-tag-note-example-<%= q.questionId %>" style="display: <%=((note) => {
+                        if (note && note.length && note.includes('[例题]')) return 'inline';
+                        else return 'none';
+                    })(q.note)%>">例题</span>
+                    <span class="quz-tag-note-rethink" id="quz-tag-note-rethink-<%= q.questionId %>" style="display: <%=((note) => {
+                        if (note && note.length && note.includes('[反思]')) return 'inline';
+                        else return 'none';
+                    })(q.note)%>">反思</span>
+                    <span class="quz-tag-note-rethink" id="quz-tag-note-summary-<%= q.questionId %>" style="display: <%=((note) => {
+                        if (note && note.length && note.includes('[总结]')) return 'inline';
+                        else return 'none';
+                    })(q.note)%>">总结</span>
 
                     <span class="quz-tag">
                         <%= ((cost) => {
@@ -751,6 +758,36 @@
             })
         }).then(response => {
             if (response.status === 200) {
+                if (noteContent && noteContent.includes('[方法]')) {
+                    document.getElementById(`quz-tag-note-method-${questionId}`).style.display = "inline";
+                } else {
+                    document.getElementById(`quz-tag-note-method-${questionId}`).style.display = "none";
+                }
+
+                if (noteContent && noteContent.includes('[积累]')) {
+                    document.getElementById(`quz-tag-note-acc-${questionId}`).style.display = "inline";
+                } else {
+                    document.getElementById(`quz-tag-note-acc-${questionId}`).style.display = "none";
+                }
+
+                if (noteContent && noteContent.includes('[例题]')) {
+                    document.getElementById(`quz-tag-note-example-${questionId}`).style.display = "inline";
+                } else {
+                    document.getElementById(`quz-tag-note-example-${questionId}`).style.display = "none";
+                }
+                if (noteContent && noteContent.includes('[反思]')) {
+                    document.getElementById(`quz-tag-note-rethink-${questionId}`).style.display = "inline";
+                } else {
+                    document.getElementById(`quz-tag-note-rethink-${questionId}`).style.display = "none";
+                }
+
+                if (noteContent && noteContent.includes('[总结]')) {
+                    document.getElementById(`quz-tag-note-summary-${questionId}`).style.display = "inline";
+                } else {
+                    document.getElementById(`quz-tag-note-summary-${questionId}`).style.display = "none";
+                }
+
+
                 return response.json();
             } else {
                 alert('笔记保存失败！');
