@@ -1,6 +1,34 @@
 <html lang="zh">
 <head>
+    <title>搜索题目</title>
     <style>
+        .search-container {
+            width: auto;
+            position: relative;
+            transform: translate(362px, 10px);
+        }
+
+        input[type=text] {
+            padding: 6px;
+            margin-top: 8px;
+            font-size: 17px;
+            border: none;
+        }
+
+        .search-container button {
+            padding: 4px 10px;
+            margin-top: 8px;
+            margin-right: 16px;
+            background: #ddd;
+            font-size: 17px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .search-container button:hover {
+            background: #ccc;
+        }
+        
         .his-item {
             margin-bottom: 20px;
             background-color: #ffffff;
@@ -49,21 +77,20 @@
         }
 
         #searchContent {
-            left: 40%;
-            position: absolute;
+            position: relative;
         }
         #searchBtn {
-            left: 52%;
-            position: absolute;
+            position: relative;
+            transform: translate(-5px,1px);
         }
     </style>
 </head>
-<div style="padding: 10px;">
-    <input id="searchContent" type="search"/>
-    <button id="searchBtn">搜索</button>
-</div>
-<body style="background: #f5f7fa;">
 
+<body style="background: #f5f7fa;">
+<div class="search-container">
+        <input id="searchContent" type="text" placeholder="输入关键字搜索" name="search">
+        <button id="searchBtn">搜索</button>
+</div>
 
 <div id="searchResult"></div>
 </body>
@@ -71,14 +98,17 @@
     function showReport(exerciseId) {
         window.location = '/exercise/' + exerciseId;
     }
+
     document.getElementById('searchBtn').addEventListener('click', event => {
+        let text = document.getElementById("searchContent").value;
+        if (text.length === 0) return;
         fetch(`/api/search`, {
             method: 'POST',
             headers: {
                 'content-type': 'application/json'
             },
             body: JSON.stringify({
-                text: document.getElementById("searchContent").value,
+                text
             })
         }).then(response => {
             if (response.status === 200) {
@@ -92,6 +122,9 @@
                 div.style = 'margin: 20px auto 0; width: 700px;'
                 let item = document.createElement('div')
                 item.className='his-item';
+                item.onclick = (e) => {
+                    window.open(`/question/${data.questionId}`, "_blank");
+                }
                 div.appendChild(item);
                 let title = document.createElement('div')
                 title.className='his-title';

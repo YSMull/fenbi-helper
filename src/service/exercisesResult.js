@@ -315,6 +315,36 @@ exports.getExerciseHistory = async function (cookie) {
     }
 }
 
+exports.getQuestion = async function (questionId, cookie) {
+    let solutionMap = await getSolutionsByIds([questionId], cookie);
+    let notesMap = await getNotesMapByIds([questionId], cookie);
+    let collectionIds = await getCollectsByIds([questionId], cookie);
+    let q = solutionMap[questionId];
+    if (notesMap[questionId]) {
+        q.note = notesMap[questionId];
+        q.wordList = parseWordListFromNote(q.note);
+    }
+
+    q.hasCollect = collectionIds.some(qid => qid === q.id);
+
+    q.keypoints = q.keypoints ? q.keypoints.map(i => i.name) : [];
+
+    q.mostWrongAnswer = q.questionMeta.mostWrongAnswer;
+
+    q.correctRatio = q.questionMeta.correctRatio;
+
+    q.totalCount = q.questionMeta.totalCount;
+
+    q.options = q.accessories[0].options;
+
+    if (q.material) {
+        q.material = q.material.content;
+    }
+    return {
+        q,
+    }
+};
+
 exports.getResultObj = async function (exerciseId, costThreshold, cookie) {
     let [exercise, report] = await Promise.all([getExercise(exerciseId, cookie), getExerciseReport(exerciseId, cookie)]);
     if (!report || !report.answers || !exercise) return;

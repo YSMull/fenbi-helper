@@ -1,0 +1,625 @@
+<html lang="zh">
+<head>
+    <style>
+        .quz-item {
+            margin-bottom: 20px;
+            background-color: #ffffff;
+            line-height: 2rem;
+            -webkit-transition: all .3s;
+            -moz-transition: all .3s;
+            -o-transition: all .3s;
+            transition: all .3s;
+        }
+
+        .quz-tag {
+            font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
+            background: #fbfdffb5;
+            border-radius: 4px;
+            border: solid 1px #dedede;
+            color: #8c939a;
+            padding: 0 8px;
+            margin-left: 8px;
+            font-size: .875rem;
+        }
+
+        .quz-tag-collect {
+            font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
+            background: rgb(16, 142, 233);
+            border-radius: 4px;
+            border: solid 1px #dedede;
+            color: #fff;
+            padding: 0 8px;
+            margin-left: 8px;
+            font-size: .875rem;
+        }
+
+        .quz-tag-note {
+            font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
+            background: rgb(38, 16, 233);
+            border-radius: 4px;
+            border: solid 1px #dedede;
+            color: #fff;
+            padding: 0 8px;
+            margin-left: 8px;
+            font-size: .875rem;
+        }
+
+        .quz-tag-note-method {
+            font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
+            background: #ff5200;
+            border-radius: 4px;
+            border: solid 1px #dedede;
+            color: #fff;
+            padding: 0 8px;
+            margin-left: 8px;
+            font-size: .875rem;
+        }
+
+        .quz-tag-note-rethink {
+            font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
+            background: #e31313;
+            border-radius: 4px;
+            border: solid 1px #dedede;
+            color: #fff;
+            padding: 0 8px;
+            margin-left: 8px;
+            font-size: .875rem;
+        }
+
+        .quz-tag-note-acc {
+            font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
+            background: #36943b;
+            border-radius: 4px;
+            border: solid 1px #dedede;
+            color: #fff;
+            padding: 0 8px;
+            margin-left: 8px;
+            font-size: .875rem;
+        }
+
+        .quz-tag-word {
+            cursor: pointer;
+            font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
+            background: #8a8a8a;
+            border-radius: 4px;
+            border: solid 1px #dedede;
+            color: #fff;
+            padding: 0 8px;
+            margin-left: 8px;
+            font-size: .875rem;
+            -webkit-transition: all .3s cubic-bezier(.645, .045, .355, 1);
+            transition: all .3s cubic-bezier(.645, .045, .355, 1);
+        }
+
+        .quz-tag-word:hover {
+            cursor: pointer;
+            font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
+            background: #6b6a6a;
+            border-radius: 4px;
+            border: solid 1px #dedede;
+            color: #fff;
+            padding: 0 8px;
+            margin-left: 8px;
+            font-size: .875rem;
+        }
+
+        .quz-title {
+            font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
+            color: #2d2d2ddb;
+            padding: 0 8px;
+            font-size: .875rem;
+            background-image: linear-gradient(to right, #bdddff, #ffffff);
+        }
+
+        .quz-content {
+            font-weight: 500;
+            color: #3c464f;
+            padding: 0 40px 10px 40px;
+        }
+
+        .quz-content p {
+            margin: 0;
+        }
+
+        .quz-options {
+            padding: 0 40px 0 40px;
+            color: rgba(60, 70, 79, 0.92);
+        }
+
+        .quz-idx {
+            padding-left: 10px;
+            position: absolute;
+        }
+
+        .quz-content-fold {
+            padding-bottom: 10px;
+            padding-top: 10px;
+        }
+
+        .quz-tag-group {
+            float: right;
+        }
+
+        /*80~100*/
+        .quz-tag-1 {
+            font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
+            border-radius: 1px;
+            background-color: #f6ffed;
+            border: 1px solid #b7eb8f;
+            color: rgba(0, 0, 0, 0.65);
+            text-shadow: 0 -1px 0 rgba(0,0,0,.12);
+            padding: 0 8px;
+            margin-left: 8px;
+            font-size: .875rem;
+        }
+
+        /*60~80*/
+        .quz-tag-2 {
+            font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
+            border-radius: 1px;
+            background-color: #e6f7ff;
+            border: 1px solid #91d5ff;
+            color: rgba(0, 0, 0, 0.65);
+            text-shadow: 0 -1px 0 rgba(0,0,0,.12);
+            padding: 0 8px;
+            margin-left: 8px;
+            font-size: .875rem;
+        }
+
+        /*40~60*/
+        .quz-tag-3 {
+            font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
+            border-radius: 1px;
+            background-color: #fffbe6;
+            border: 1px solid #ffe58f;
+            color: rgba(0, 0, 0, 0.65);
+            text-shadow: 0 -1px 0 rgba(0,0,0,.12);
+            padding: 0 8px;
+            margin-left: 8px;
+            font-size: .875rem;
+        }
+        /*20~40*/
+        .quz-tag-4 {
+            font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
+            border-radius: 1px;
+            background-color: #fff2f0;
+            border: 1px solid #ffccc7;
+            color: rgba(0, 0, 0, 0.65);
+            text-shadow: 0 -1px 0 rgba(0,0,0,.12);
+            padding: 0 8px;
+            margin-left: 8px;
+            font-size: .875rem;
+        }
+        /*0~20*/
+        .quz-tag-5 {
+            font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
+            border-radius: 1px;
+            border: solid 1px rgba(61, 61, 61, 0.25);
+            background: rgba(127, 127, 127, 0.14);
+            color: rgba(0, 0, 0, 0.65);
+            text-shadow: 0 -1px 0 rgba(0,0,0,.12);
+            padding: 0 8px;
+            margin-left: 8px;
+            font-size: .875rem;
+        }
+
+        a {
+            text-decoration: none;
+            color: #2385f7;
+        }
+
+        .solution-btn {
+            text-decoration: none;
+            border: 1px solid #d9d9d9;
+            -webkit-box-shadow: 0 2px 0 rgba(0, 0, 0, .015);
+            box-shadow: 0 2px 0 rgba(0, 0, 0, .015);
+            cursor: pointer;
+            -webkit-transition: all .3s cubic-bezier(.645, .045, .355, 1);
+            transition: all .3s cubic-bezier(.645, .045, .355, 1);
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -ms-touch-action: manipulation;
+            touch-action: manipulation;
+            height: 32px;
+            padding: 4px 15px;
+            font-size: 14px;
+            border-radius: 2px;
+            color: rgba(0, 0, 0, .65);
+            background: #fff;
+            -moz-transition: all .3s;
+            -o-transition: all .3s;
+            margin-right: 10px;
+        }
+
+        .solution-btn:hover {
+            color: #40a9ff;
+            background: #fff;
+            border-color: #40a9ff;
+        }
+
+        .my-note {
+            padding: 10px 0 10px 0;
+        }
+
+        .note-area {
+            margin-top: 12px;
+            background-color: #e6efe3;
+            resize: none;
+            width: 658px;
+            height: 173px;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-y: auto;
+            font-size: 16px;
+            letter-spacing: -.38px;
+            line-height: 23px;
+            outline: 0;
+            border: solid 1px #9e9e9ea6;
+        }
+    </style>
+    <script src="/easymde.min.js"></script>
+    <link rel="stylesheet" href="/easymde.min.css">
+    <title>题目列表</title>
+</head>
+<body style="background: #f5f7fa;">
+
+<div style="margin: 20px auto 0; width: 1024px;">
+    <div id="<%= q.id %>-tag" style="width: 200px;display: inline-block; white-space: nowrap;overflow: initial;">
+        <% for (let i = 0; i < 4 && i < q.keypoints.concat(q.tags).length; i++) { %>
+            <span class="quz-tag" style="margin-left: 0; border-radius: 0;"><%= q.keypoints.concat(q.tags)[i] %></span>
+        <% } %>
+    </div>
+
+    <% if (q.wordList) {%>
+    <div>
+        <% for (let i = 0; i < q.wordList.length; i++) { %>
+            <span class="quz-tag-word" style="margin-left: 0; border-radius: 0;"
+                  onclick="fetchZjWord(`<%= q.wordList[i] %>`)"><%= q.wordList[i] %></span>
+        <% } %>
+    </div>
+    <% } %>
+
+    <div class="quz-item" id="<%= q.id %>">
+        <div class="quz-title">
+            <span><%= q.source %></span>
+            <span class="quz-tag-group">
+                <span class="quz-tag-collect" style="display: <%=((hasCollect) => {
+                    if (hasCollect) return 'inline';
+                    else return 'none';
+                })(q.hasCollect)%>" id="quz-tag-collect-<%= q.id %>">收藏</span>
+                <span class="quz-tag-note" style="display: <%=((note) => {
+                    if (note != null && note != '') return 'inline';
+                    else return 'none';
+                })(q.note)%>" id="quz-tag-note-<%= q.id %>">笔记</span>
+                <% if (q.note && q.note.length && q.note.includes("[方法]") > 0) {%>
+                    <span class="quz-tag-note-method">方法</span>
+                <% } %>
+                <% if (q.note && q.note.length && q.note.includes("[积累]") > 0) {%>
+                    <span class="quz-tag-note-acc">积累</span>
+                <% } %>
+                <% if (q.note && q.note.length && q.note.includes("[例题]") > 0) {%>
+                    <span class="quz-tag-note-acc">例题</span>
+                <% } %>
+                <% if (q.note && q.note.length && (q.note.includes("[反思]") || q.note.includes("[总结]")) > 0) {%>
+                    <span class="quz-tag-note-rethink"><%= q.note.includes("[反思]") ? '反思' : '总结'%></span>
+                <% } %>
+
+                <span class="quz-tag-<%=((r) => {
+                    if (r > 80) return 1;
+                    if (r > 60) return 2;
+                    if (r > 40) return 3;
+                    if (r > 20) return 4;
+                    return 5;
+                })(q.correctRatio)%>"> 正确率<%- q.correctRatio.toFixed(2)+ '%' %>
+                </span>
+                <span class="quz-tag"><%= q.totalCount %></span>
+            </span>
+        </div>
+        <div class="quz-content-fold" id="quz-content-<%= q.id %>">
+            <% if (q.material) { %>
+                <div class="quz-content"> <%- q.material %></div>
+            <% } %>
+            <span class="quz-idx"> <%- q.idx  %>.</span>
+            <div class="quz-content"> <%- q.content %></div>
+            <div class="quz-options">
+                <% for (let i = 0; i < q.options.length; i++) { %>
+                    <% if (q.options[i].startsWith('<p>')) { %>
+                        <div><%= ['A', 'B', 'C', 'D'][i] + '. ' %> <%- q.options[i].replace(/^<p>/g, '').replace(/<\/p>$/g, '') %></div>
+                    <% } else { %>
+                        <div><%= ['A', 'B', 'C', 'D'][i] + '. ' %> <%- q.options[i] %></div>
+                    <% }%>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <div class="quz-other-fold" style="margin-top: -10px;margin-bottom: 38px;">
+        <a class="solution-btn" id="show-ans-<%= q.id %>"
+           href="javascript:showSolution(<%= q.id %>);">
+            查看解析
+        </a>
+        <a class="solution-btn" id="show-comment-<%= q.id %>"
+           href="javascript:showComment(<%= q.id %>);">
+            查看评论
+        </a>
+        <a class="solution-btn" id="show-video-<%= q.id %>"
+           href="javascript:showVideoSolution(<%= q.id %>);">
+            视频解析
+        </a>
+        <a class="solution-btn" id="collect-<%= q.id %>"
+           href="javascript:collect(<%= q.id %>);">
+            <% if (q.hasCollect) { %>取消收藏<% } else { %>收藏<% } %>
+        </a>
+        <a class="solution-btn" id="copy-<%= q.id %>"
+           href="javascript:copyContent(<%= q.id %>);">
+            复制
+        </a>
+        <a class="solution-btn" target="_blank"
+           href="https://www.fenbi.com/spa/tiku/report/preview/xingce/xingce/questions?questionIds=<%= q.id %>&fromType=1">
+            粉笔地址
+        </a>
+    </div>
+    <video class="video-solution" id="video-<%= q.id %>" width="400" style="display: none; margin: -10px 0 20px 0;" controls></video>
+    <div id="comment-<%= q.id %>" style="display: none;list-style: none;margin-bottom: 15px;"></div>
+    <div class="quz-other-fold" id="ans-<%= q.id %>" style="padding: 0 30px;display:none">
+        <div class="my-note">
+            <strong>笔记:</strong>
+            <a class="solution-btn" id="save-note-<%= q.id %>"
+               href="javascript:saveNote(<%= q.id %>);">
+                保存笔记
+            </a>
+            <br>
+            <div style="margin-top: 20px">
+                <textarea id="mdNote-<%= q.id %>"></textarea>
+            </div>
+
+            <span id="note-<%= q.id %>" style="display: none;" class="note-area"><%= q.note %></span>
+        </div>
+        <div>
+            我的选择: <%= q.myAnswer %>
+        </div>
+        <%- q.solution %>
+    </div>
+</div>
+</body>
+<script>
+    function showSolution(questionId) {
+        let dis = document.getElementById(`ans-${questionId}`).style.display;
+        if (dis === 'none') {
+            document.getElementById(`ans-${questionId}`).style.display = "block";
+            document.getElementById(`show-ans-${questionId}`).innerHTML = "收起解析";
+        } else {
+            document.getElementById(`ans-${questionId}`).style.display = "none";
+            document.getElementById(`show-ans-${questionId}`).innerHTML = "查看解析";
+        }
+    }
+
+    function showComment(questionId) {
+        let comment = document.getElementById(`comment-${questionId}`);
+        let dis = comment.style.display;
+        if (dis === 'none') {
+            if (comment.innerHTML) {
+                comment.style.display = 'inline';
+                document.getElementById(`show-comment-${questionId}`).innerHTML = "收起评论";
+                return;
+            }
+            fetch(`/api/comment/${questionId}`, {
+                method: 'GET'
+            }).then(response => {
+                if (response.status === 200) {
+                    document.getElementById(`show-comment-${questionId}`).innerHTML = "收起评论";
+                    return response.json();
+                }
+            }).then((datas) => {
+                for (let {comment: c, createdTime, fiveGradeScore, likeCount} of datas) {
+                    let li = document.createElement('li');
+                    li.innerText = c + `(${likeCount})`;
+                    li.style = 'margin-bottom: 10px;border: 1px solid #90909096;padding: 10px;';
+                    comment.appendChild(li);
+                }
+                comment.style.display = 'block';
+            });
+        } else {
+            document.getElementById(`show-comment-${questionId}`).innerHTML = "查看评论";
+            document.getElementById(`comment-${questionId}`).style.display = "none";
+        }
+    }
+
+    function showVideoSolution(questionId) {
+        let video = document.getElementById(`video-${questionId}`);
+        let source = document.createElement('source');
+        source.type = 'video/mp4';
+        let dis = video.style.display;
+        if (dis === 'none') {
+            if (video.currentSrc) {
+                video.style.display = 'inline';
+                return;
+            }
+            fetch(`/api/video/${questionId}`, {
+                method: 'GET'
+            }).then(response => {
+                if (response.status === 200) {
+                    document.getElementById(`show-video-${questionId}`).innerHTML = "收起视频";
+                    return response.text();
+                }
+            }).then(url => {
+                source.src = url;
+                video.appendChild(source);
+                video.style.display = 'inline';
+            });
+        } else {
+            video.pause();
+            video.style.display = 'none';
+            document.getElementById(`show-video-${questionId}`).innerHTML = "视频解析";
+        }
+    }
+
+    function collect(questionId) {
+        let dis = document.getElementById(`quz-tag-collect-${questionId}`).style.display;
+        if (dis === "none") {
+            fetch(`/api/collect/${questionId}`, {
+                method: 'POST'
+            }).then(response => {
+                if (response.status === 200) {
+                    document.getElementById(`quz-tag-collect-${questionId}`).style.display = "inline";
+                    document.getElementById(`collect-${questionId}`).innerHTML = "取消收藏";
+                }
+            })
+        } else {
+            fetch(`/api/collect/${questionId}`, {
+                method: 'DELETE'
+            }).then(response => {
+                if (response.status === 200) {
+                    document.getElementById(`quz-tag-collect-${questionId}`).style.display = "none";
+                    document.getElementById(`collect-${questionId}`).innerHTML = "收藏";
+                }
+            })
+        }
+    }
+
+    function copyContent(questionId) {
+        let str = document.getElementById(questionId).innerHTML;
+
+        function listener(e) {
+            e.clipboardData.setData("text/html", str);
+            e.clipboardData.setData("text/plain", str);
+            e.preventDefault();
+        }
+
+        document.addEventListener("copy", listener);
+        document.execCommand("copy");
+        document.removeEventListener("copy", listener);
+    }
+
+    function hideContent(questionId, fold) {
+        let unExpand = () => {
+            document.getElementById(`quz-content-${questionId}`).style.display = "none";
+
+
+            // 关闭解析
+            document.getElementById(`show-ans-${questionId}`).style.display = "none";
+            document.getElementById(`show-ans-${questionId}`).innerHTML = "查看解析";
+            document.getElementById(`ans-${questionId}`).style.display = "none";
+
+            // 关闭评论
+            document.getElementById(`show-comment-${questionId}`).style.display = "none";
+            document.getElementById(`show-comment-${questionId}`).innerHTML = "查看评论";
+            document.getElementById(`comment-${questionId}`).style.display = "none";
+
+
+            // 关闭视频
+            document.getElementById(`show-video-${questionId}`).style.display = "none";
+            document.getElementById(`show-video-${questionId}`).innerHTML = "视频解析";
+            let video = document.getElementById(`video-${questionId}`);
+            video.pause();
+            video.style.display = 'none';
+
+            document.getElementById(`collect-${questionId}`).style.display = "none";
+            document.getElementById(`copy-${questionId}`).style.display = "none";
+        };
+
+        let expand = () => {
+            document.getElementById(`quz-content-${questionId}`).style.display = "block";
+            document.getElementById(`show-ans-${questionId}`).style.display = "inline";
+            document.getElementById(`show-comment-${questionId}`).style.display = "inline";
+            document.getElementById(`show-video-${questionId}`).style.display = "inline";
+            document.getElementById(`collect-${questionId}`).style.display = "inline";
+            document.getElementById(`copy-${questionId}`).style.display = "inline";
+        }
+        if (fold != null && fold === true) {
+            expand();
+        } else if (fold != null && fold === false) {
+            unExpand();
+        } else {
+            let dis = document.getElementById(`quz-content-${questionId}`).style.display;
+            if (dis === 'none') {
+                expand();
+            } else {
+                unExpand();
+            }
+        }
+    }
+
+    let mdOptions = {
+        autofocus: true,
+        forceSync: true,
+        autoRefresh: {
+            delay: 300,
+        },
+        hideIcons: ["guide", "heading"],
+        minHeight: "250px",
+        maxHeight: "250px",
+        parsingConfig: {
+            allowAtxHeaderWithoutSpace: true,
+            strikethrough: false,
+            underscoresBreakWords: true,
+        },
+        placeholder: "请输入笔记",
+        showIcons: ["code", "table"],
+        spellChecker: false,
+        status: false,
+        styleSelectedText: false,
+        sideBySideFullscreen: false,
+        syncSideBySidePreviewScroll: false,
+        tabSize: 4,
+        // toolbar: false,
+        toolbarTips: false,
+
+    };
+
+    var mdeMap = {};
+    function genMdNote(...questionIds) {
+        questionIds.forEach(questionId => {
+            let easyMDE = new EasyMDE(Object.assign({}, mdOptions, {element: document.getElementById(`mdNote-${questionId}`)}));
+            mdeMap[questionId] = easyMDE;
+            let content = document.getElementById(`note-${questionId}`).innerText;
+            if(content.length > 0) {
+                easyMDE.value(content);
+                easyMDE.togglePreview();
+            }
+        });
+    }
+
+    function saveNote(questionId) {
+        let noteContent = mdeMap[questionId].value();
+        fetch(`/api/saveNote/${questionId}`, {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                noteContent
+            })
+        }).then(response => {
+            if (response.status === 200) {
+                return response.json();
+            } else {
+                alert('笔记保存失败！');
+            }
+        })
+    }
+
+    genMdNote(<%= q.id %>)
+
+    function fetchZjWord(word) {
+        fetch(`/api/zj`, {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                word: word,
+            })
+        }).then(response => {
+            if (response.status === 200) {
+                return response.text();
+            }
+        }).then(res => {
+            window.open(res, "_blank");
+        })
+    }
+
+</script>
+</html>

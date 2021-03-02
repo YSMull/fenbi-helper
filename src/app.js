@@ -53,7 +53,17 @@ router.get('/exercise/:exerciseId', async ctx => {
     } else {
         ctx.redirect('/setup?redirectPath=' + ctx.originalUrl);
     }
+});
 
+router.get('/question/:questionId', async ctx => {
+    let questionId = ctx.params.questionId;
+    let cookie = ctx.request.headers['cookie']
+    let renderObj = await exerciseResult.getQuestion(questionId, cookie);
+    if (renderObj) {
+        await ctx.render('question', renderObj);
+    } else {
+        ctx.redirect('/setup?redirectPath=' + ctx.originalUrl);
+    }
 });
 
 router.get('/search', async ctx => {

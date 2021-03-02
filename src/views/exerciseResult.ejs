@@ -435,6 +435,9 @@
                     <% if (q.note && q.note.length && q.note.includes("[积累]") > 0) {%>
                         <span class="quz-tag-note-acc">积累</span>
                     <% } %>
+                    <% if (q.note && q.note.length && q.note.includes("[例题]") > 0) {%>
+                        <span class="quz-tag-note-acc">例题</span>
+                    <% } %>
                     <% if (q.note && q.note.length && (q.note.includes("[反思]") || q.note.includes("[总结]")) > 0) {%>
                         <span class="quz-tag-note-rethink"><%= q.note.includes("[反思]") ? '反思' : '总结'%></span>
                     <% } %>
