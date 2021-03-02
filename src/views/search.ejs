@@ -95,11 +95,20 @@
 <div id="searchResult"></div>
 </body>
 <script>
-    function showReport(exerciseId) {
-        window.location = '/exercise/' + exerciseId;
-    }
+
+    document.getElementById('searchContent').addEventListener('keydown', e => {
+        let theEvent = e;
+        let code = theEvent.keyCode || theEvent.which || theEvent.charCode;
+        if (code === 13) {
+            search();
+        }
+    })
 
     document.getElementById('searchBtn').addEventListener('click', event => {
+        search();
+    });
+
+    function search() {
         let text = document.getElementById("searchContent").value;
         if (text.length === 0) return;
         fetch(`/api/search`, {
@@ -141,6 +150,6 @@
                 r.appendChild(div);
             }
         });
-    });
+    }
 </script>
 </html>
