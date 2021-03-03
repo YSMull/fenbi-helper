@@ -204,6 +204,17 @@ function parseWordListFromNote(content) {
     }
 }
 
+function parseTagListFromNote(content) {
+    let lines = content.split('\n').filter(a => a);
+    let wdList = lines.map(wl => {
+        if (wl.match(/^\{(.*)\}$/g)) {
+            let w = wl.replace(/^\{(.*)\}$/g, '$1')
+            return w;
+        }
+    }).filter(a => a);
+    return wdList;
+}
+
 exports.zjWord = async function (word) {
     let result = await httpRequest({
         url: `https://zaojv.com/wordQueryDo.php`,
@@ -420,6 +431,7 @@ exports.getResultObj = async function (exerciseId, costThreshold, cookie) {
         if (notesMap[q.questionId]) {
             q.note = notesMap[q.questionId];
             q.wordList = parseWordListFromNote(q.note);
+            q.tagList = parseTagListFromNote(q.note);
         }
 
         if (solutionObj.material) {

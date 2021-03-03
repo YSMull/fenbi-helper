@@ -398,8 +398,14 @@
     <div id="costChart" style="width: auto;height:400px;"></div>
     <% for (let q of concernQuestions) { %>
         <div id="<%= q.questionId %>-tag" style="width: 200px;display: inline-block; white-space: nowrap;overflow: initial;">
-            <% for (let i = 0; i < 4 && i < q.keypoints.concat(q.tags).length; i++) { %>
-                <span class="quz-tag" style="margin-left: 0; border-radius: 0;"><%= q.keypoints.concat(q.tags)[i] %></span>
+            <% if (q.tagList && q.tagList.length > 0) { %>
+                <% for (let i = 0; i < q.tagList.length; i++) { %>
+                    <span class="quz-tag" style="margin-left: 0; border-radius: 0;background: #0c253eb5; color: white;"><%= q.tagList[i] %></span>
+                <% } %>
+            <% } %>
+            <% let tags = q.keypoints.concat(q.tags) %>
+            <% for (let i = 0; i < tags.length; i++) { %>
+                <span class="quz-tag" style="margin-left: 0; border-radius: 0;"><%= tags[i] %></span>
             <% } %>
         </div>
 
@@ -786,7 +792,6 @@
                 } else {
                     document.getElementById(`quz-tag-note-summary-${questionId}`).style.display = "none";
                 }
-
 
                 return response.json();
             } else {
