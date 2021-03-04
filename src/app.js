@@ -67,7 +67,12 @@ router.get('/question/:questionId', async ctx => {
 });
 
 router.get('/search', async ctx => {
-    await ctx.render('search');
+    let cookie = ctx.request.headers['cookie']
+    if (!cookie || !cookie.includes('userid')) {
+        ctx.redirect('/setup');
+    } else {
+        await ctx.render('search');
+    }
 });
 
 router.post('/api/search', koaBody(), async ctx => {
@@ -89,17 +94,29 @@ router.get('/calc', async ctx => {
 
 router.get('/history', async ctx => {
     let cookie = ctx.request.headers['cookie']
-    await ctx.render('history', await exerciseResult.getExerciseHistory(cookie));
+    if (!cookie || !cookie.includes('userid')) {
+        ctx.redirect('/setup');
+    } else {
+        await ctx.render('history', await exerciseResult.getExerciseHistory(cookie));
+    }
 });
 
 router.get('/history-category', async ctx => {
-    let cookie = ctx.request.headers['cookie']
-    await ctx.render('history-category', await exerciseResult.getExerciseHistory(cookie));
+    let cookie = ctx.request.headers['cookie'];
+    if (!cookie || !cookie.includes('userid')) {
+        ctx.redirect('/setup');
+    } else {
+        await ctx.render('history-category', await exerciseResult.getExerciseHistory(cookie));
+    }
 });
 
 router.get('/history-category-complex', async ctx => {
     let cookie = ctx.request.headers['cookie']
-    await ctx.render('history-category-complex', await exerciseResult.getExerciseHistory(cookie));
+    if (!cookie || !cookie.includes('userid')) {
+        ctx.redirect('/setup');
+    } else {
+        await ctx.render('history-category-complex', await exerciseResult.getExerciseHistory(cookie));
+    }
 });
 
 router.get('/setup', async ctx => {
@@ -168,5 +185,10 @@ router.get('/favicon.ico', async ctx => {
 });
 
 router.all('/', async ctx => {
-    ctx.redirect('/history-category-complex');
+    let cookie = ctx.request.headers['cookie']
+    if (!cookie || !cookie.includes('userid')) {
+        ctx.redirect('/setup');
+    } else {
+        ctx.redirect('/history-category-complex');
+    }
 });
