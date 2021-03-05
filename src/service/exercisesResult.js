@@ -28,7 +28,9 @@ async function getCategories(group, cookie) {
     });
     let rels = [];
     buildCat(category, rels, group);
-    rels.push({type: '其它', items: group['others'], childTypes: []});
+
+    rels.push({type: '试卷', items: group['others'].filter(i => i.answerCount > 30), childTypes: []});
+
     calcCount(rels);
     return rels;
 }

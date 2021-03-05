@@ -27,6 +27,8 @@
 
         .his-item {
             display: flex;
+            color: #2d2d2ddb;
+            width: 300px;
             margin-left: 25px;
             margin-bottom: 1px;
             margin-top: 1px;
@@ -38,8 +40,13 @@
             font-family: "Sarasa Mono HC", "Droid Sans Mono", "monospace", ".SF NS Mono", serif;
         }
 
+        .his-highlight {
+            background: #d8d8d885;
+            /* font-weight: bold; */
+            color: #339805;
+        }
+
         .his-title {
-            color: #2d2d2ddb;
             font-size: .875rem;
             max-width: 230px;
             overflow: hidden;
@@ -186,6 +193,25 @@
         domainLabelFormat: "%m月",
         displayLegend: false,
         cellSize: 15,
+        onClick: function(date, nb) {
+            let items = document.getElementsByClassName("his-item");
+            const datesAreOnSameDay = (first, second) =>
+                first.getFullYear() === second.getFullYear() &&
+                first.getMonth() === second.getMonth() &&
+                first.getDate() === second.getDate();
+            for (let item of items) {
+                let d = new Date(item.children[1].innerText);
+                if (datesAreOnSameDay(d, date)) {
+                    if (item.classList.contains("his-highlight")) {
+                        item.classList.remove("his-highlight");
+                    } else {
+                        item.classList.add("his-highlight");
+                    }
+                } else {
+                    item.classList.remove("his-highlight");
+                }
+            }
+        }
     });
 
     function getData() {
