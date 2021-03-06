@@ -232,7 +232,7 @@ exports.zjWord = async function (word) {
             directGo: 1
         })
     });
-    return "https://zaojv.com/" + result.replaceAll("\n", "").replace(/(.*)HREF="(.*)".*/g, '$2')
+    return "https://zaojv.com/" + result.replace(/\n/g, "").replace(/(.*)HREF="(.*)".*/g, '$2')
 }
 
 exports.saveNote = async function (questionId, content, cookie) {
