@@ -190,7 +190,18 @@ async function getEpisodesByIds(questionIds, cookie) {
     return result.data;
 }
 
-function parseWordListFromNote(content) {
+function parseWordListFromNote2(content) {
+    let lines = content.split('\n');
+    let wdList = lines.map(wl => {
+        let reg = /.*\[!([^\]]*)\].*/g;
+        if (wl.match(reg)) {
+            return wl.replace(reg, '$1');
+        }
+    }).filter(a=>a);
+    return wdList.filter(a => a.length <= 5);
+}
+
+function parseWordListFromNote1(content) {
     let lines = content.split('\n');
     let s = lines.indexOf('[start积累]');
     let e = lines.indexOf('[end积累]');
@@ -205,6 +216,11 @@ function parseWordListFromNote(content) {
         return [];
     }
 }
+
+function parseWordListFromNote(content) {
+    return parseWordListFromNote1(content).concat(parseWordListFromNote2(content));
+}
+
 
 function parseTagListFromNote(content) {
     let lines = content.split('\n').filter(a => a);
@@ -538,7 +554,6 @@ function convertTree(root) {
         } else if (child.name === 'p') {
             str += convertTree(child);
         } else {
-            console.log('b')
         }
     }
     return str;

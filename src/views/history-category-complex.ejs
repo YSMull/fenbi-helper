@@ -3,7 +3,7 @@
     <style>
         .block {
             width: 330px;
-            float: left;
+            /*float: left;*/
             display: inline-grid;
             line-height: 1.2em;
             padding-left: 25px;
@@ -125,9 +125,9 @@
             <div class="block_tag"><%= c1.type + `(${c1.count})` %></div>
                 <div class="cat-class">
                     <% for (let c1Items of c1.items) {%>
-                        <div class="his-item" onclick="showReport(<%= c1Items.id %>)" id="his-<%= c1Items.id %>">
+                        <div class="his-item" id="his-<%= c1Items.id %>">
                             <% let title = c1Items.cleanName + `(${c1Items.answerCount},${c1Items.correctRate}%) (${Math.round(moment.duration(c1Items.elapsedTime, 'seconds').asMinutes().toFixed(1))}m)` %>
-                            <div title="<%= title %>" class="his-title">
+                            <div title="<%= title %>" class="his-title" onclick="showReport(<%= c1Items.id %>)">
                                 <span><%= title %></span>
                             </div>
                             <div class="his-time"><%= c1Items.finishedDate %></div>
@@ -139,9 +139,9 @@
                                 <div class="block_tag" style="font-size: 1.3em"><%= c2.type + `(${c2.count})` %></div>
                                 <div class="cat-class">
                                     <% for (let c2Items of c2.items) {%>
-                                        <div class="his-item" onclick="showReport(<%= c2Items.id %>)" id="his-<%= c2Items.id %>">
+                                        <div class="his-item" id="his-<%= c2Items.id %>">
                                             <% let title = c2Items.cleanName + `(${c2Items.answerCount},${c2Items.correctRate}%) (${Math.round(moment.duration(c2Items.elapsedTime, 'seconds').asMinutes().toFixed(1))}m)` %>
-                                            <div title="<%= title %>" class="his-title">
+                                            <div title="<%= title %>" class="his-title" onclick="showReport(<%= c2Items.id %>)">
                                                 <span><%= title %></span>
                                             </div>
                                             <div class="his-time"><%= c2Items.finishedDate %></div>
@@ -153,9 +153,9 @@
                                                 <div class="block_tag" style="font-size: 1em"><%= c3.type + `(${c3.count})` %></div>
                                                 <div class="cat-class">
                                                     <% for (let c2Items of c3.items) {%>
-                                                        <div class="his-item" onclick="showReport(<%= c2Items.id %>)" id="his-<%= c2Items.id %>">
+                                                        <div class="his-item" id="his-<%= c2Items.id %>">
                                                             <% let title = c2Items.cleanName + `(${c2Items.answerCount},${c2Items.correctRate}%) (${Math.round(moment.duration(c2Items.elapsedTime, 'seconds').asMinutes().toFixed(1))}m)` %>
-                                                            <div title="<%= title %>" class="his-title">
+                                                            <div title="<%= title %>" class="his-title" onclick="showReport(<%= c2Items.id %>)">
                                                                 <span><%= title %></span>
                                                             </div>
                                                             <div class="his-time"><%= c2Items.finishedDate %></div>
@@ -219,7 +219,7 @@
     }
 
     function showReport(exerciseId) {
-        window.location = '/exercise/' + exerciseId;
+        window.open('/exercise/' + exerciseId, "_blank");
     }
 </script>
 </html>
