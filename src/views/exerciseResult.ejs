@@ -432,7 +432,7 @@
                         else return 'none';
                     })(q.hasCollect)%>" id="quz-tag-collect-<%= q.questionId %>">收藏</span>
                     <span class="quz-tag-note" style="display: <%=((note) => {
-                        if (note != null && note != '') return 'inline';
+                        if (note != null && note !== '' && !['[方法]', '[积累]', '[例题]', '[反思]', '[总结]'].some(e => note.includes(e))) return 'inline';
                         else return 'none';
                     })(q.note)%>" id="quz-tag-note-<%= q.questionId %>">笔记</span>
 
