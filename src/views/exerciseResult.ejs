@@ -886,7 +886,19 @@
         series: [{
             name: '耗时',
             type: 'bar',
-            data: datas.map(item => item.cost),
+            data: datas.map(item => {
+                let itemStyle;
+                if (flashWarning && !item.correct) {
+                    itemStyle = {
+                        borderColor:"#de0000",
+                        borderWidth:2,
+                    }
+                }
+                return {
+                    value: item.cost,
+                    itemStyle
+                }
+            }),
             markLine: {
                 silent: true,
                 itemStyle: {
@@ -1028,9 +1040,9 @@
                         sort = !sort;
                         let d = JSON.parse(document.getElementById('costArr').value);
                         if (sort) {
-                            myChart.setOption(option(d.sort((a,b) => {return a.cost - b.cost;})), true);
+                            applyOption(d.sort((a,b) => {return a.cost - b.cost;}));
                         } else {
-                            myChart.setOption(option(d), true);
+                            applyOption(d);
                         }
                     }
                 },
@@ -1042,9 +1054,11 @@
                         sort = !sort;
                         let d = JSON.parse(document.getElementById('costArr').value);
                         if (sort) {
-                            myChart.setOption(option(d.sort((a,b) => {return b.correctRatio - a.correctRatio;})), true);
+                            applyOption(d.sort((a, b) => {
+                                return b.correctRatio - a.correctRatio;
+                            }));
                         } else {
-                            myChart.setOption(option(d), true);
+                            applyOption(d);
                         }
                     }
                 }
@@ -1053,9 +1067,20 @@
 
     });
 
-    // 使用刚指定的配置项和数据显示图表。
-    myChart.setOption(option(costDatas));
+    var flashWarning = true;
+    var currentInterval;
+    function applyOption(data) {
+        if (currentInterval) {
+            clearInterval(currentInterval)
+        }
+        currentInterval = setInterval(function () {
+            flashWarning = !flashWarning;
+            myChart.setOption(option(data));
+        }, 1000);
+        myChart.setOption(option(data));
+    }
 
+    applyOption(costDatas);
 
     let idxMap = {};
     function genIdxMap(idxStr) {

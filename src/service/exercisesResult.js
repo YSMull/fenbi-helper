@@ -441,7 +441,7 @@ exports.getResultObj = async function (exerciseId, costThreshold, cookie) {
         }
     });
 
-    let costArr = concernQuestions.map(a => ({idx: a.idx, cost: a.cost, correctRatio: a.correctRatio})).filter(a => a.cost);
+    let costArr = concernQuestions.map(a => ({idx: a.idx, cost: a.cost, correctRatio: a.correctRatio, correct: a.correct})).filter(a => a.cost);
     // let mean = _.sum(costArr) / costArr.length;
     // let var1 = Math.sqrt(_.sum(costArr.map(i => (i - mean) * (i - mean))) / costArr.length);
     // let var2 = Math.sqrt(_.sum(costArr.map(i => (i - mean) * (i - mean))) / (costArr.length - 1));
