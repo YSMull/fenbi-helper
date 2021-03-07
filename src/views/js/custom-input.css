@@ -1,0 +1,152 @@
+label,
+input[type="radio"] + span,
+input[type="radio"] + span::before,
+label,
+input[type="checkbox"] + span,
+input[type="checkbox"] + span::before
+{
+    display: inline-block;
+    vertical-align: middle;
+}
+
+label *,
+label *
+{
+    cursor: pointer;
+}
+
+input[type="radio"],
+input[type="checkbox"]
+{
+    opacity: 0;
+    position: absolute;
+}
+
+input[type="radio"] + span,
+input[type="checkbox"] + span
+{
+    font: normal 11px/14px Arial, Sans-serif;
+    color: #333;
+}
+
+label:hover span::before,
+label:hover span::before
+{
+    -moz-box-shadow: 0 0 2px #ccc;
+    -webkit-box-shadow: 0 0 2px #ccc;
+    box-shadow: 0 0 2px #ccc;
+}
+
+label:hover span,
+label:hover span
+{
+    color: #000;
+}
+
+input[type="radio"] + span::before,
+input[type="checkbox"] + span::before
+{
+    content: "";
+    width: 12px;
+    height: 12px;
+    margin: 0 4px 0 0;
+    border: solid 1px #a8a8a8;
+    line-height: 14px;
+    text-align: center;
+
+    -moz-border-radius: 100%;
+    -webkit-border-radius: 100%;
+    border-radius: 100%;
+
+    background: #f6f6f6;
+    background: -moz-radial-gradient(#f6f6f6, #dfdfdf);
+    background: -webkit-radial-gradient(#f6f6f6, #dfdfdf);
+    background: -ms-radial-gradient(#f6f6f6, #dfdfdf);
+    background: -o-radial-gradient(#f6f6f6, #dfdfdf);
+    background: radial-gradient(#f6f6f6, #dfdfdf);
+}
+
+input[type="radio"]:checked + span::before,
+input[type="checkbox"]:checked + span::before
+{
+    color: #666;
+}
+
+input[type="radio"]:disabled + span,
+input[type="checkbox"]:disabled + span
+{
+    cursor: default;
+
+    -moz-opacity: .4;
+    -webkit-opacity: .4;
+    opacity: .4;
+}
+
+input[type="checkbox"] + span::before
+{
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+}
+
+input[type="radio"]:checked + span::before
+{
+    content: "\2022";
+    font-size: 30px;
+    margin-top: -1px;
+}
+
+input[type="checkbox"]:checked + span::before
+{
+    content: "\2714";
+    font-size: 12px;
+}
+
+
+
+input[class="blue"] + span::before
+{
+    border: solid 1px blue;
+    background: #B2DBFF;
+    background: -moz-radial-gradient(#B2DBFF, #dfdfdf);
+    background: -webkit-radial-gradient(#B2DBFF, #dfdfdf);
+    background: -ms-radial-gradient(#B2DBFF, #dfdfdf);
+    background: -o-radial-gradient(#B2DBFF, #dfdfdf);
+    background: radial-gradient(#B2DBFF, #dfdfdf);
+}
+input[class="blue"]:checked + span::before
+{
+    color: darkblue;
+}
+
+input[class="green"] + span::before
+{
+    border: solid 1px green;
+    background: #a4e39f;
+    background: -moz-radial-gradient(#a4e39f, #dfdfdf);
+    background: -webkit-radial-gradient(#a4e39f, #dfdfdf);
+    background: -ms-radial-gradient(#a4e39f, #dfdfdf);
+    background: -o-radial-gradient(#a4e39f, #dfdfdf);
+    background: radial-gradient(#a4e39f, #dfdfdf);
+}
+input[class="green"]:checked + span::before
+{
+    color: darkgreen;
+}
+
+
+
+input[class="red"] + span::before
+{
+    border: solid 1px red;
+    background: #FF9593;
+    background: -moz-radial-gradient(#FF9593, #dfdfdf);
+    background: -webkit-radial-gradient(#FF9593, #dfdfdf);
+    background: -ms-radial-gradient(#FF9593, #dfdfdf);
+    background: -o-radial-gradient(#FF9593, #dfdfdf);
+    background: radial-gradient(#FF9593, #dfdfdf);
+}
+input[class="red"]:checked + span::before
+{
+    color: darkred;
+}

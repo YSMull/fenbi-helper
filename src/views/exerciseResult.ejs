@@ -191,7 +191,7 @@
             float: right;
         }
 
-        a {
+        .toc a {
             text-decoration: none;
             color: #2385f7;
         }
@@ -351,15 +351,177 @@
             outline: 0;
             border: solid 1px #9e9e9ea6;
         }
+
+        .toc {
+            position: fixed;
+            visibility: hidden;
+            top: 32px;
+            margin: 0;
+            min-width: 160px;
+            list-style: none;
+            box-shadow: 0 0 0 1px #0000002b;
+            padding: 5px;
+        }
+
+        .toc:before {
+             content: '重点关注';
+             font-size: 16px;
+             font-weight: 600;
+             line-height: 30px;
+             height: 30px;
+         }
+
+        .toc ul {
+            font-size: 1em;
+            list-style: disc;
+            margin-left: 30px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .active {
+            background-color: rgb(230, 230, 230);
+            border-radius: 3px;
+        }
+
+        .word-list {
+            position: fixed;
+            top: 150px;
+            right: 30px;
+            margin: 0;
+            min-width: 160px;
+            list-style: none;
+            box-shadow: 0 0 0 1px #0000002b;
+            padding: 5px;
+        }
+        .word-list:before {
+            content: '词语积累';
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 30px;
+            height: 30px;
+        }
+        .word-list-item {
+            padding-left: 10px;
+        }
+        .word-list-item-a {
+            -webkit-transition: all .5s cubic-bezier(0.11, 0.63, 0, 1.26);
+            transition: all .5s cubic-bezier(0.11, 0.63, 0, 1.26);
+            text-decoration: none;
+            color: rgba(105, 113, 113, 0.92);
+        }
+
+        .word-list-item-a:hover {
+            color: #4d83a7;
+        }
+
+        .word-expr-span {
+            padding-left: 6px;
+        }
+
+        .word-expr-span-a {
+            color: #6b6a6a;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .word-expr-span-a:hover {
+            color: #4d83a7;
+        }
+        .toc-li {
+            cursor: pointer;
+        }
+        .toc-li:hover {
+            cursor: pointer;
+            background-color: rgb(230, 230, 230);
+            border-radius: 3px;
+        }
+
+        .active:hover {
+            cursor: pointer;
+            background-color: rgb(230, 230, 230);
+            border-radius: 3px;
+        }
+
+        .toc-wrong-tag {
+            position: inherit;
+            left: 0;
+            font-size: 16px;
+            transform: translate(0px, -1px);
+            color: red;
+            display: inline;
+        }
     </style>
     <script src="/echarts.min.js"></script>
     <script src="/easymde.min.js"></script>
     <link rel="stylesheet" href="/easymde.min.css">
+    <link rel="stylesheet" href="/custom-input.css">
     <title>题目列表</title>
 </head>
 <body style="background: #f5f7fa;">
 
-<div style="margin: 20px auto 0; width: 1024px;">
+<div style="margin: 20px auto 0; width: 900px;">
+
+    <ul class="toc">
+        <% for (let i = 0; i < concernQuestions.length; i++) { %>
+            <% let q = concernQuestions[i]; %>
+            <% let lineStyle = '';%>
+            <% if (i > 0) { %>
+                <% let p = concernQuestions[i-1]; %>
+                <% if (!p.correct && q.correct) { %>
+                <div style="border-bottom: 3px dashed #2322228c;"></div>
+                <% } %>
+            <% } %>
+            <li id="toc-li-<%=q.questionId%>" onmouseover="jumpTo(<%=q.questionId%>)" class="toc-li">
+                <span class="toc-wrong-tag" id="quz-tag-collect-<%= q.questionId %>">
+                    <% if (!q.correct) { %>
+                        <% if(!q.note) { %>
+                            <label><input type="checkbox" name="needHandle" class="red"/><span></span></label>
+                        <% } else { %>
+                            <label><input type="checkbox" name="needHandle" class="red" checked disabled/><span></span></label>
+                        <% } %>
+                    <% } else if (q.note && q.hasCollect) {%>
+                            <label><input type="checkbox" name="needHandle" class="blue" checked disabled/><span></span></label>
+                    <% } else if (q.hasCollect) {%>
+                            <label><input type="checkbox" name="needHandle" class="blue"/><span></span></label>
+                    <% } else if (q.note) { %>
+                            <label><input type="checkbox" name="needHandle" class="green" checked disabled/><span></span></label>
+                    <% } %>
+                </span>
+                <span class="quz-tag-collect" style="margin-left: 0;display: <%=((hasCollect, note) => {
+                    if (hasCollect && !note) return 'inline';
+                    else return 'none';
+                })(q.hasCollect, q.note)%>" id="quz-tag-collect-<%= q.questionId %>">收藏</span>
+                <span class="quz-tag-note" style="margin-left: 0;display: <%=((note) => {
+                    if (note != null && note !== '' && !['[方法]', '[积累]', '[例题]', '[反思]', '[总结]'].some(e => note.includes(e))) return 'inline';
+                    else return 'none';
+                })(q.note)%>" id="quz-tag-note-<%= q.questionId %>">笔记</span>
+
+                <span class="quz-tag-note-method" id="quz-tag-note-method-<%= q.questionId %>" style="margin-left: 0;display: <%=((note) => {
+                    if (note && note.length && note.includes('[方法]')) return 'inline';
+                    else return 'none';
+                })(q.note)%>">方法</span>
+                <span class="quz-tag-note-acc" id="quz-tag-note-acc-<%= q.questionId %>" style="margin-left: 0;display: <%=((note) => {
+                    if (note && note.length && note.includes('[积累]')) return 'inline';
+                    else return 'none';
+                })(q.note)%>">积累</span>
+                <span class="quz-tag-note-acc" id="quz-tag-note-example-<%= q.questionId %>" style="margin-left: 0;display: <%=((note) => {
+                    if (note && note.length && note.includes('[例题]')) return 'inline';
+                    else return 'none';
+                })(q.note)%>">例题</span>
+                <span class="quz-tag-note-rethink" id="quz-tag-note-rethink-<%= q.questionId %>" style="margin-left: 0;display: <%=((note) => {
+                    if (note && note.length && note.includes('[反思]')) return 'inline';
+                    else return 'none';
+                })(q.note)%>">反思</span>
+                <span class="quz-tag-note-rethink" id="quz-tag-note-summary-<%= q.questionId %>" style="margin-left: 0;display: <%=((note) => {
+                    if (note && note.length && note.includes('[总结]')) return 'inline';
+                    else return 'none';
+                })(q.note)%>">总结</span>
+            </li>
+        <% } %>
+    </ul>
+    <ul class="word-list"></ul>
+
     <input id="costArr" value="<%= JSON.stringify(costArr) %>" type="hidden" />
     <a href="/history-category-complex" class="returnHistory">返回练习列表</a>
     <h2 style="text-align: center"><%=cleanTitle(exercise.sheet.name)%></h2>
@@ -395,8 +557,9 @@
         超时率<span class="cost-count"><%= (concernQuestions.filter(q => q.cost > costThreshold && q.correct).length / concernQuestions.length * 100).toFixed(1) + '%' %></span>
         <span class="comment">(耗时大于<%= costThreshold %>秒)</span>
     </p>
-    <div id="costChart" style="width: auto;height:400px;"></div>
+    <div id="costChart" style="margin: auto; width: auto;height:400px;"></div>
     <% for (let q of concernQuestions) { %>
+    <div class="whole-item" id="<%= q.questionId %>">
         <div id="<%= q.questionId %>-tag" style="width: 200px;display: inline-block; white-space: nowrap;overflow: initial;">
             <% if (q.tagList && q.tagList.length > 0) { %>
                 <% for (let i = 0; i < q.tagList.length; i++) { %>
@@ -409,16 +572,16 @@
             <% } %>
         </div>
 
-        <% if (q.wordList) {%>
-        <div>
-            <% for (let i = 0; i < q.wordList.length; i++) { %>
-                <span class="quz-tag-word" style="margin-left: 0; border-radius: 0;"
-                      onclick="fetchZjWord(`<%= q.wordList[i] %>`)"><%= q.wordList[i] %></span>
-            <% } %>
-        </div>
+        <% if (q.wordList && q.wordList.length > 0) {%>
+            <div>
+                <% for (let i = 0; i < q.wordList.length; i++) { %>
+                    <span class="quz-tag-word" style="margin-left: 0; border-radius: 0;"
+                          onclick="fetchZjWord(`<%= q.wordList[i] %>`)"><%= q.wordList[i] %></span>
+                <% } %>
+            </div>
         <% } %>
 
-        <div class="quz-item" id="<%= q.questionId %>">
+        <div class="quz-item">
             <div class="<%= ((q) => {
                 if (!q.correct) return 'quz-title-wrong';
                 if (q.correct && q.cost > costThreshold) return 'quz-title-timeout'
@@ -535,6 +698,7 @@
             </div>
             <%- q.solution %>
         </div>
+    </div>
     <% } %>
 </div>
 </body>
@@ -1113,5 +1277,98 @@
         })
     }
 
+    function jumpTo(questionId) {
+        window.location = '#' + questionId;
+        hideContent(questionId, true);
+    }
+
+    {// 词语积累
+        genWordToc();
+    }
+
+    { // 目录
+        genToc();
+    }
+
+    function genWordToc() {
+        let items = document.querySelectorAll('.quz-tag-word');
+        if (items.length === 0) {
+            document.querySelector('.word-list').remove();
+        }
+        let wordToc = document.querySelector('.word-list');
+
+        for (let item of items) {
+            let li = document.createElement('li');
+            let a = document.createElement('a');
+            let span = document.createElement('span');
+            span.classList.add('word-expr-span');
+            let span_a = document.createElement('a');
+            span_a.innerText = '释义';
+            span_a.classList.add('word-expr-span-a');
+            let questionId = item.parentElement.parentElement.id;
+            span_a.onclick = () => fetchZjWord(item.innerText)
+            // span.append('(');
+            span.append(span_a);
+            // span.append(')');
+            a.href = `#${questionId}`;
+            a.innerText = item.innerText;
+            a.classList.add('word-list-item-a');
+            li.appendChild(a);
+            li.appendChild(span);
+            li.classList.add('word-list-item')
+            wordToc.appendChild(li);
+        }
+    }
+
+    function genToc() {
+        let items = document.querySelectorAll('.whole-item');
+        let toc = document.querySelector('.toc');
+
+        let subTitles = items;
+
+        let clientHeight = document.documentElement.clientHeight;
+        if (toc) {
+            function tocShow() {
+                let clientWidth = document.documentElement.clientWidth;
+                // let tocFixed = clientWidth / 2 - 510 - toc.offsetWidth;
+                let tocFixed = 5;
+                if (false) {
+                    toc.style.visibility = 'hidden';
+                } else {
+                    toc.style.visibility = 'visible';
+                    toc.style.left = tocFixed + 'px';
+                }
+            }
+
+            function tocScroll() {
+                let sectionIds = [];
+                let sections = [];
+                for (let i = 0; i < subTitles.length; i++) {
+                    sectionIds.push(subTitles[i].getAttribute('id'));
+                    sections.push(subTitles[i].offsetTop);
+                }
+                let pos = document.documentElement.scrollTop || document.body.scrollTop;
+                pos = pos + 1;
+                let lob = document.body.offsetHeight - subTitles[subTitles.length - 1].offsetTop;
+                for (let i = 0; i < sections.length; i++) {
+                    // if (i === subTitles.length - 1 && clientHeight > lob) {
+                    //     pos = pos + (clientHeight - lob);
+                    // }
+
+                    if (sections[i] <= pos && sections[i] < pos + clientHeight) {
+                        if (document.querySelector('.active')) {
+                            document.querySelector('.active').classList.remove('active');
+                        }
+                        document.getElementById(`toc-li-${sectionIds[i]}`).classList.add('active');
+                    }
+                }
+            }
+
+            document.addEventListener('scroll', tocScroll, false);
+            window.addEventListener('resize', tocShow, false);
+            // $(toc).ready(tocShow)
+            tocShow();
+        }
+    }
 </script>
 </html>
