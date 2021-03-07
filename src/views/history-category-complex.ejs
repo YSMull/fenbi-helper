@@ -115,7 +115,7 @@
     <% if (exerciseHistory.length == 0) {%>
         <script>window.location = '/setup' </script>
     <% } %>
-    <div id="cal-heatmap"></div>
+    <div id="cal-heatmap" style="margin-left: 25px;"></div>
 </div>
 
 <div>
@@ -186,9 +186,9 @@
         range: 12,
         start: new Date('<%= moment().startOf('month').startOf('day').subtract(1, 'year').add(1, 'month').format('YYYY-MM-DD')%>'),
         data: getData(),
-        subDomainTextFormat: function(date ,value) {
-            return value;
-        },
+        // subDomainTextFormat: function(date ,value) {
+        //     return getData()[date.getTime()/1000];
+        // },
         // subDomainTextFormat: "%d",
         domainLabelFormat: "%m月",
         displayLegend: false,
@@ -211,7 +211,8 @@
                     item.classList.remove("his-highlight");
                 }
             }
-        }
+        },
+        legend: [15, 35, 70, 100]
     });
 
     function getData() {
