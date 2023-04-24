@@ -28,10 +28,10 @@ async function getCategories(group, cookie) {
     });
     let rels = [];
     buildCat(category, rels, group);
+    //console.log(group);
+    rels.push({type: '试卷', items: group, childTypes: []});
 
-    rels.push({type: '试卷', items: group['others'].filter(i => i.answerCount > 30), childTypes: []});
-
-    calcCount(rels);
+    //calcCount(rels);
     return rels;
 }
 
@@ -435,7 +435,10 @@ exports.getResultObj = async function (exerciseId, costThreshold, cookie) {
         q.hasCollect = collectionIds.some(qid => qid == q.questionId);
 
         q.keypoints = solutionObj.keypoints ? solutionObj.keypoints.map(i => i.name) : [];
-        q.tags = solutionObj.tags.map(i => i.name);
+        //console.log(solutionObj);
+        //q.tags = solutionObj.tags.map(i => i.name);
+        q.tags = solutionObj.tags;
+
 
         // 答案解析
         q.solution = solutionObj.solution; // html
